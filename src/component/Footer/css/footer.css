@@ -1,0 +1,21 @@
+.footerParent {
+    position: "absolute";
+    bottom: 0;
+    background-color: rgb(255, 106, 106);
+    height: 5vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+}
+
+.copyrightText {
+    margin-left: 1%;
+    font-size: 18;
+    color: black;
+}
+
+.copyrightSpan {
+    color: red;
+}
+

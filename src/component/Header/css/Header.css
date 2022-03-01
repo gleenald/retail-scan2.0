@@ -1,0 +1,39 @@
+.headerParent {
+    background-color: rgb(240, 0, 0);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    height: 100vh;
+}
+.img {
+    margin-left: 1%;
+    width: 5%;
+}
+
+.btn-grp1 {
+    background-color: rgb(255, 0, 0);
+    display: flex;
+    flex-direction: row;
+    width: 70%;
+}
+
+.btn-grp2 {
+    background-color: rgb(255, 0, 0);
+    display: flex;
+    width: 10%;
+}
+
+.myClass.dx-button-mode-contained.dx-button-default {
+    font-size: 24;
+    border-radius: 10;
+    background-color: rgba(0, 86, 184, 1.0) !important;
+}
+
+.myClass.dx-button-mode-contained.dx-button-default.dx-state-hover {
+    background-color: rgb(0, 95, 204) !important;
+    border-color: transparent;
+}
+

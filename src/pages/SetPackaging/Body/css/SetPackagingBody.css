@@ -1,0 +1,185 @@
+/* MAIN TITLE SECTION */
+.MainTitle-CTR {
+    background-color: transparent;
+    margin-top: 2%;
+    margin-left: 2%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.MainTitle-Text1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: rgba(82, 87, 92, 1);
+}
+
+.MainTitle-Text2 {
+    color: #222233;
+    font-size: 24px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.MainTitle-Text3 {
+    font-size: 20px;
+    font-weight: 400;
+    color: black;
+}
+
+.MainTitle-Text4 {
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(82, 87, 92, 1);
+}
+.MainTitle-Btn2 {
+    margin-top: 40px;
+    margin-right: 25px;
+}
+
+
+
+/* TABLE1 SECTION */
+.Table1-CTR {
+    margin-left: 2%;
+    background-color: white;
+    width: 95%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+
+.dx-data-row .Table1-Column-Number {
+    background-color: rgba(177, 242, 242, 1);
+
+}
+
+.dx-data-row .Table1-Column-PicklistNumber {
+    background-color: rgba(199, 246, 246, 1);
+
+}
+
+.dx-header-row .Table1-Column-Number {
+    background-color: rgba(0, 86, 184, 1);
+    color: white;
+}
+
+.dx-header-row .Table1-Column-PicklistNumber {
+    background-color: rgba(36, 157, 233, 1);
+    color: white;
+}
+
+
+
+/* TABLE2 SECTION */
+.Table2-CTR {
+    background-color: white;
+    margin-left: 2%;
+    width: 95%;
+    margin-top: 1.5%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 1%;
+    padding-right: 1%;
+
+}
+.Table2-TitleGroup {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.dx-header-row .Table2-Column-Number {
+    background-color: rgba(0, 86, 184, 1);
+    color: white;
+}
+.dx-data-row .Table2-Column-Number {
+    background-color: rgba(177, 242, 242, 1);
+}
+
+.dx-header-row .Table2-Column-ItemCode {
+    background-color: rgba(36, 157, 233, 1);
+    color: white;
+}
+.dx-data-row .Table2-Column-ItemCode {
+    background-color: rgba(199, 246, 246, 1);
+}
+
+.dx-header-row .Table2-Column-ItemName {
+    background-color: rgba(36, 157, 233, 1);
+    color: white;
+}
+.dx-data-row .Table2-Column-ItemName {
+    background-color: rgba(199, 246, 246, 1);
+}
+
+.dx-header-row .Table2-Column-Qty {
+    background-color: rgba(36, 157, 233, 1);
+    color: white;
+}
+.dx-data-row .Table2-Column-Qty {
+    background-color: rgba(199, 246, 246, 1);
+}
+
+
+
+/* POPUP ERROR SECTION */
+.PopUpError-MainTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: rgb(226, 30, 30);
+    margin-top: 10px;
+}
+
+.PopUpError-Text {
+    font-size: 16px;
+    font-weight: 500;
+    color: black;
+    margin-top: 5px;
+}
+.PopUpError-Btn {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+
+
+/* POPUP SUBMIT SUCCESS SECTION */
+.PopUpSubmitSuccess-Text {
+    color:black;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.PopUpSubmitSuccess-Btn {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 60px;
+    margin-right: 10px;
+}
+
+.myClass.dx-button-mode-contained.dx-button-default {
+    font-size: 24;
+    border-radius: 10;
+    background-color: rgba(0, 86, 184, 1.0) !important;
+}
+
+.myClass.dx-button-mode-contained.dx-button-default.dx-state-hover {
+    background-color: rgb(0, 95, 204) !important;
+    border-color: transparent;
+}
+
+.myClass2.dx-button-mode-contained.dx-button-default {
+    font-size: 24;
+    border-radius: 10;
+    background-color: rgb(204, 204, 204) !important;
+}
+
+.myClass2.dx-button-mode-contained.dx-button-default.dx-state-hover {
+    background-color: rgb(190, 190, 190) !important;
+    border-color: transparent;
+}

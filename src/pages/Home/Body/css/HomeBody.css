@@ -1,0 +1,169 @@
+.titleContainer {
+    background-color: transparent;
+    margin-top: 2%;
+    margin-left: 2%;
+    display: flex;
+    flex-direction: row;
+}
+
+.titleText {
+    font-size: 32px;
+    font-weight: 700;
+    color: rgba(82, 87, 92, 1);
+}
+
+.titleLine {
+    color: #222233;
+    font-size: 24px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.titleText2 {
+    font-size: 20px;
+    font-weight: 400;
+    color: black;
+}
+
+.titleText3 {
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(82, 87, 92, 1);
+}
+
+
+
+.tableContainer {
+    margin-left: 2%;
+    background-color: white;
+    width: 95%;
+    padding: 1%;
+}
+
+.top-option {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.top-option .limit-grp {
+    display: flex;
+    flex-direction: row;
+}
+
+.top-option .text1 {
+    margin-right: 10px;
+}
+
+.top-option .text2 {
+    margin-left: 10px;
+}
+
+.top-option .search-sort-grp {
+    display: flex;
+    flex-direction: row;
+}
+
+.top-option .search-sort-grp .sort-btn {
+    margin-right: 10px;
+}
+
+.top-option .search-sort-grp .search-textBar {
+    margin-right: 10px;
+}
+
+.bottom-option {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.bottom-option .previous-btn {
+    margin-right: 10px;
+}
+
+.bottom-option .next-btn {
+    margin-right: 10px;
+}
+
+.bottom-option .text {
+    margin-right: 10px;
+}
+
+
+.dx-data-row .column-number {
+    background-color: rgba(177, 242, 242, 1);
+}
+.dx-data-row .column-picklistNumber {
+    background-color: rgba(199, 246, 246, 1);
+}
+
+.dx-header-row .column-number {
+    background-color: rgba(0, 86, 184, 1);
+    color: white;
+}
+.dx-header-row .column-picklistNumber {
+    background-color: rgba(36, 157, 233, 1);
+    color: white;
+}
+.dx-datagrid-borders > .dx-datagrid-pager {
+    border-top: 0px !important;
+}
+
+
+/* POPUP SERVERSIDE 500 ERR */
+.PopupServersideError .MainTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: rgb(226, 30, 30);
+    margin-top: 10px;
+}
+.PopupServersideError .msg {
+    font-size: 16px;
+    font-weight: 500;
+    color: black;
+    margin-top: 5px;
+}
+
+
+/* POPUP NOTFOUND ERR */
+.PopupNotFoundError .MainTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: rgb(226, 30, 30);
+    margin-top: 10px;
+}
+.PopupNotFoundError .msg {
+    font-size: 16px;
+    font-weight: 500;
+    color: black;
+    margin-top: 5px;
+}
+
+
+/* POPUP SORT */
+.Sort .btn-grp {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.Sort .btn-grp .apply-btn {
+    margin-left: 15px;
+}
+
+/* Button Attributes Group */
+.okBtnAttr .dx-button-mode-contained.dx-button-default {
+    font-size: 24;
+    border-radius: 10;
+    background-color: rgba(0, 86, 184, 1.0) !important;
+}
+
+.okBtnAttr .dx-button-mode-contained.dx-button-default.dx-state-hover {
+    background-color: rgb(0, 95, 204) !important;
+    border-color: transparent;
+}
