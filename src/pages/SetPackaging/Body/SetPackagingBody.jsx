@@ -3989,6 +3989,55 @@ class SetPackagingBody extends Component {
                         </div>
                     </Popup>
                 </div>
+                {/* Popup err if type item total kurang dari list validasi */}
+                <div>
+                    <Popup
+                        visible={this.state.isTypeItemLess}
+                        closeOnOutsideClick={true}
+                        showTitle={false}
+                        width={587}
+                        height={197}
+                        onHiding={this.disableTypeItemLess}
+                    >
+                        <p
+                            style={{
+                                fontSize: 20,
+                                color: "red",
+                                fontWeight: '600',
+                                marginTop: -5
+                            }}
+                        >
+                            Error!
+                        </p>
+                        <p
+                            style={{
+                                fontSize: 16,
+                                color: 'black',
+                                fontWeight: '600'
+                            }}
+                        >
+                            Jumlah tipe item kurang dari seharusnya. Harap scan semua tipe item sesuai dengan list validasi.
+                        </p>
+
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'flex-end',
+                                marginTop: 30
+                            }}
+                        >
+                            <Button
+                                text="OK"
+                                width={100}
+                                type="default"
+                                stylingMode="contained"
+                                elementAttr={this.state.buttonAttributes}
+                                onClick={this.disableTypeItemLess}
+                            />
+                        </div>
+                    </Popup>
+                </div>
 
 
                 {/* Popup loading */}
@@ -4802,65 +4851,6 @@ class SetPackagingBody extends Component {
 
 
                 {/* Popup yang berhubungan dengan finish and create delivery */}
-                {/* Popup if type item total kurang dari list validasi */}
-                <div>
-                    <Popup
-                        visible={this.state.isTypeItemLess}
-                        closeOnOutsideClick={true}
-                        showTitle={false}
-                        width={587}
-                        height={197}
-                        onHiding={this.disableTypeItemLess}
-                    >
-                        <p
-                            style={{
-                                fontSize: 20,
-                                color: "red",
-                                fontWeight: '600',
-                                marginTop: -5
-                            }}
-                        >
-                            Konfirmasi
-                        </p>
-                        <p
-                            style={{
-                                fontSize: 16,
-                                color: 'black',
-                                fontWeight: '600'
-                            }}
-                        >
-                            Jumlah tipe item kurang dari seharusnya. Tetap lanjutkan proses finish and create delivery ?
-                        </p>
-
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'flex-end',
-                                marginTop: 30
-                            }}
-                        >
-                            <Button
-                                text="Tidak"
-                                width={100}
-                                type="default"
-                                stylingMode="outlined"
-                                elementAttr={this.state.buttonAttributes2}
-                                onClick={this.disableTypeItemLess}
-                            />
-
-                            <Button
-                                text="Ya"
-                                width={100}
-                                type="default"
-                                stylingMode="contained"
-                                elementAttr={this.state.buttonAttributes}
-                                onClick={this.createDelivery2}
-                                style={{ marginLeft: 10 }}
-                            />
-                        </div>
-                    </Popup>
-                </div>
                 {/* Popup if qty item kurang dari list validasi */}
                 <div>
                     <Popup
@@ -5005,6 +4995,7 @@ class SetPackagingBody extends Component {
                                 style={{
                                     borderRadius: 10
                                 }}
+                                elementAttr={this.state.buttonAttributes}
                                 onClick={this.enableDeliverySuccess}
                             />
                         </div>
