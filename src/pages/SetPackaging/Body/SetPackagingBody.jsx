@@ -1229,8 +1229,6 @@ class SetPackagingBody extends Component {
                 redirect: 'follow'
             };
 
-            this.setState({ isLoading: false })
-
             const res = await fetch(`${baseURL}/packaging`, requestOptions)
             const stat = await res.status
             const data = await res.json()
