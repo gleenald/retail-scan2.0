@@ -197,11 +197,61 @@ class SetPackagingBody extends Component {
         }
     }
 
-    disableTryCatchErr = () => {
+    disableTryCatchErr = async () => {
         try {
             this.setState({
-                isTryCatchErr: false
+                isTryCatchErr: false,
+                isLoading: true
             })
+            //fetch
+            const Token = window.localStorage.getItem("UserToken")
+
+            let myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${Token}`);
+
+            let raw = JSON.stringify({
+                "IsLocked": false
+            });
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            const res = await fetch(`${baseURL}/lock-picklist/${this.props.match.params.picklistnumber}`)
+            const stat = await res.status
+            const data = await res.json()
+
+            console.log(stat)
+            console.log(data)
+
+            if (stat >= 200 && stat <= 300) {
+                this.props.history.push({
+                    pathname: '/home'
+                })
+            }
+            if (stat >= 400 && stat <= 500) {
+                this.setState({
+                    isLoading: false,
+                    isClientSideErr: true,
+                    errMsg: data.description
+                })
+                console.log('cancel gagal')
+                console.log(data.description);
+                logger.error(`@Gleenald HTTP Stat: ${stat}, ClientSide Error, function disableTryCatchErr() halaman SetPackaging, msg: ${data.description}, Username: ${window.localStorage.getItem('Username')}`)
+            }
+            if (stat >= 500 && stat <= 600) {
+                this.setState({
+                    isLoading: false,
+                    isServersideError: true,
+                    errMsg: data.description
+                })
+                console.log('cancel gagal');
+                console.log(data.description);
+                logger.error(`@Gleenald HTTP Stat: ${stat}, Serverside Error, function disableTryCatchErr() halaman SetPackaging, msg: ${data.description}, Username: ${window.localStorage.getItem('Username')}`)
+            }
         }
         catch (err) {
             console.log(err)
@@ -2893,6 +2943,72 @@ class SetPackagingBody extends Component {
             </div>
         }
     }
+    cellRenderValidList = (data) => {
+        if (data.values[4] < data.values[3]) {
+            return <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    height: 25
+                }}
+            >
+                <p
+                    style={{
+                        position: "relative",
+                        bottom: "10px",
+                        marginRight: "10px",
+                        color: "orange",
+                        fontWeight: "400",
+                    }}
+                >
+                    {data.value}
+                </p>
+            </div>
+        }
+        if (data.values[4] > data.values[3]) {
+            return <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    height: 25
+                }}
+            >
+                <p
+                    style={{
+                        position: "relative",
+                        bottom: "10px",
+                        marginRight: "10px",
+                        color: "red",
+                        fontWeight: "500",
+                    }}
+                >
+                    {data.value}
+                </p>
+            </div>
+        }
+        if (data.values[4] == data.values[3]) {
+            return <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    height: 25
+                }}
+            >
+                <p
+                    style={{
+                        position: "relative",
+                        bottom: "10px",
+                        marginRight: "10px",
+                        color: "green",
+                        fontWeight: "400",
+                    }}
+                >
+                    {data.value}
+                </p>
+            </div>
+        }
+    }
+
 
 
     //function buat dapetin data validasi dan data package
@@ -3272,18 +3388,21 @@ class SetPackagingBody extends Component {
                             dataType="integer"
                             width={100}
                             cssClass="Table1-Column-Number"
+                            cellRender={this.cellRenderValidList}
                         />
 
                         <Column
                             dataField="ItemCode"
                             dataType="string"
                             cssClass="Table2-Column-ItemCode"
+                            cellRender={this.cellRenderValidList}
                         />
 
                         <Column
                             dataField="ItemName"
                             dataType="string"
                             cssClass="Table2-Column-ItemName"
+                            cellRender={this.cellRenderValidList}
                         />
 
                         <Column
@@ -3291,6 +3410,7 @@ class SetPackagingBody extends Component {
                             dataType="string"
                             cssClass="Table2-Column-Qty"
                             width={120}
+                            cellRender={this.cellRenderValidList}
                         />
 
                         <Column
@@ -3298,6 +3418,7 @@ class SetPackagingBody extends Component {
                             dataType="string"
                             cssClass="Table2-Column-Qty"
                             width={120}
+                            cellRender={this.cellRenderValidList}
                         />
 
                     </DataGrid>
@@ -3450,7 +3571,7 @@ class SetPackagingBody extends Component {
                                 disabled={this.state.textBoxStat}
                                 value={this.state.scanItem}
                                 onValueChange={(y) => { this.setState({ scanItem: y }) }}
-                                onEnterKey={this.scanItemCode}
+                                onEnterKey={this.scanBarcode}
                             />
                         </div>
 
@@ -4879,7 +5000,7 @@ class SetPackagingBody extends Component {
                                 fontWeight: '600'
                             }}
                         >
-                            Jumlah item kurang dari list validasi. Lanjutkan proses finish and Create Delivery ?
+                            Qty item kurang dari seharusnya. Lanjutkan proses finish and Create Delivery ?
                         </p>
 
                         <div
