@@ -59,6 +59,7 @@ class SetPackagingBody extends Component {
             //untuk status popup di halaman setpackaging
             isLoading: false,
             isClientSideErr: false,
+            isNotYetFinish: false,
             isServersideError: false,
             isTryCatchErr: false,
             isAddNewPackage: false,
@@ -730,6 +731,25 @@ class SetPackagingBody extends Component {
                 isTryCatchErr: true
             })
             logger.error(`@Gleenald App Error! function disablePrintDisplay() halaman SetPackaging msg: ${err}, Username: ${window.localStorage.getItem('Username')}`)
+        }
+    }
+
+    disableNotYetFinish = () => {
+        try {
+            this.setState({
+                isNotYetFinish: false
+            })
+            this.props.history.push({
+                pathname: '/home'
+            })
+        }
+        catch (err) {
+            console.log(err);
+            this.setState({
+                tryCatchErrMsg: err,
+                isTryCatchErr: true
+            })
+            logger.error(`@Gleenald App Error! function disableNotYetFinish() halaman SetPackaging msg: ${err}, Username: ${window.localStorage.getItem('Username')}`)
         }
     }
 
@@ -3249,11 +3269,12 @@ class SetPackagingBody extends Component {
                 }
                 if (stat >= 400 && stat <= 500) {
                     console.log(data.description);
+                    console.log('glen')
 
                     this.setState({
                         errMsg: data.description,
                         isLoading: false,
-                        isClientSideErr: true
+                        isNotYetFinish: true
                     })
 
                     logger.error(`@Gleenald HTTP Stat: ${stat}, ClientSide Error, function getValid() halaman SetPackaging, msg: ${data.description}, Username: ${window.localStorage.getItem('Username')}`)
@@ -3571,7 +3592,7 @@ class SetPackagingBody extends Component {
                                 disabled={this.state.textBoxStat}
                                 value={this.state.scanItem}
                                 onValueChange={(y) => { this.setState({ scanItem: y }) }}
-                                onEnterKey={this.scanBarcode}
+                                onEnterKey={this.scanItemCode}
                             />
                         </div>
 
@@ -4155,6 +4176,46 @@ class SetPackagingBody extends Component {
                                 stylingMode="contained"
                                 elementAttr={this.state.buttonAttributes}
                                 onClick={this.disableTypeItemLess}
+                            />
+                        </div>
+                    </Popup>
+                </div>
+                {/* err picklist sebelumnya belum selesai redirect ke home */}
+                <div>
+                    <Popup
+                        visible={this.state.isNotYetFinish}
+                        showTitle={false}
+                        width={587}
+                        height={220}
+                        className="PopupServersideError"
+                    >
+                        <div>
+                            <p className="MainTitle">
+                                Error!
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="msg">
+                                {this.state.errMsg}
+                            </p>
+                        </div>
+
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'flex-end',
+                                marginTop: 30
+                            }}
+                        >
+                            <Button
+                                text='Ok'
+                                stylingMode='contained'
+                                type='default'
+                                width={100}
+                                elementAttr={this.state.okBtnAttr}
+                                onClick={this.disableNotYetFinish}
                             />
                         </div>
                     </Popup>
