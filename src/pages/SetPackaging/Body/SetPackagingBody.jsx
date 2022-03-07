@@ -2452,7 +2452,7 @@ class SetPackagingBody extends Component {
                 this.setState({
                     isLoading: false,
                     isPrint: true,
-                    isPrintDisplay: true
+                    //isPrintDisplay: true
                 })
                 console.log(this.state.print)
             }
@@ -3592,7 +3592,7 @@ class SetPackagingBody extends Component {
                                 disabled={this.state.textBoxStat}
                                 value={this.state.scanItem}
                                 onValueChange={(y) => { this.setState({ scanItem: y }) }}
-                                onEnterKey={this.scanItemCode}
+                                onEnterKey={this.scanBarcode}
                             />
                         </div>
 
