@@ -272,7 +272,7 @@ class Login extends Component {
                 <div
                     style={{
                         backgroundColor: "white",
-                        height: 724,
+                        height: 550,
                         width: 887,
                         borderRadius: 50,
                         borderStyle: "solid",
@@ -289,7 +289,7 @@ class Login extends Component {
                         style={{
                             display: 'flex',
                             flexDirection: 'row',
-                            marginTop: '30px'
+                            marginTop: '50px'
                         }}
                     >
                         <img src={BeOneLogo} style={{ width: "192px", height: "108px" }} />
@@ -298,7 +298,7 @@ class Login extends Component {
 
 
                     {/* Header Section */}
-                    <div
+                    {/* <div
                         style={{
                             justifyContent: 'center',
                             alignItems: "center",
@@ -326,7 +326,7 @@ class Login extends Component {
                         >
                             Untuk dapat menggunakan aplikasi
                         </h2>
-                    </div>
+                    </div> */}
 
 
                     {/* TextBox Section */}
@@ -365,6 +365,7 @@ class Login extends Component {
                                     this.setState({ passwordVal: y })
                                 }
                             }
+                            onEnterKey={this.login}
                         >
 
                         </TextBox>

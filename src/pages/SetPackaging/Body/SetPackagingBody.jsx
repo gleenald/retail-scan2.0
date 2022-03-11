@@ -86,6 +86,11 @@ class SetPackagingBody extends Component {
             isDeliverySuccess: false,
             isPrint: false,
             isPrintDisplay: false,
+            isSuperUserEditPackage: false,
+            isSuperUserDeletePackage: false,
+            isSuperUserEditQtyItem: false,
+            isSuperUserDeleteItem: false,
+            isSuperUserEnableEdit: false,
 
             //buat simpen msg err
             errMsg: "",
@@ -93,6 +98,9 @@ class SetPackagingBody extends Component {
 
             //buat simpen nama package yang user input
             PackageName: "",
+
+            //buat simpen superuser pass
+            superUserPass: "",
 
             //buat simpen error msg saat add new package
             addNewPackageAlert: '',
@@ -753,6 +761,86 @@ class SetPackagingBody extends Component {
         }
     }
 
+    disableSuperUserEditPackage = () => {
+        try {
+            this.setState({
+                isSuperUserEditPackage: false
+            })
+        }
+        catch (err) {
+            console.log(err);
+            this.setState({
+                tryCatchErrMsg: err,
+                isTryCatchErr: true
+            })
+            logger.error(`@Gleenald App Error! function disableSuperUserEditPackage() halaman SetPackaging msg: ${err}, Username: ${window.localStorage.getItem('Username')}`)
+        }
+    }
+
+    disableSuperUserDeletePackage = () => {
+        try {
+            this.setState({
+                isSuperUserDeletePackage: false
+            })
+        }
+        catch (err) {
+            console.log(err);
+            this.setState({
+                tryCatchErrMsg: err,
+                isTryCatchErr: true
+            })
+            logger.error(`@Gleenald App Error! function disableSuperUserDeletePackage() halaman SetPackaging msg: ${err}, Username: ${window.localStorage.getItem('Username')}`)
+        }
+    }
+
+    disableSuperUserEditQtyItem = () => {
+        try {
+            this.setState({
+                isSuperUserEditQtyItem: false
+            })
+        }
+        catch (err) {
+            console.log(err);
+            this.setState({
+                tryCatchErrMsg: err,
+                isTryCatchErr: true
+            })
+            logger.error(`@Gleenald App Error! function disableSuperUserEditQtyItem() halaman SetPackaging msg: ${err}, Username: ${window.localStorage.getItem('Username')}`)
+        }
+    }
+
+    disableSuperUserDeleteItem = () => {
+        try {
+            this.setState({
+                isSuperUserDeleteItem: false
+            })
+        }
+        catch (err) {
+            console.log(err);
+            this.setState({
+                tryCatchErrMsg: err,
+                isTryCatchErr: true
+            })
+            logger.error(`@Gleenald App Error! function disableSuperUserDeleteItem() halaman SetPackaging msg: ${err}, Username: ${window.localStorage.getItem('Username')}`)
+        }
+    }
+
+    disableSuperUserEnableEdit = () => {
+        try {
+            this.setState({
+                isSuperUserDeleteItem: false
+            })
+        }
+        catch (err) {
+            console.log(err);
+            this.setState({
+                tryCatchErrMsg: err,
+                isTryCatchErr: true
+            })
+            logger.error(`@Gleenald App Error! function disableSuperUserEnableEdit() halaman SetPackaging msg: ${err}, Username: ${window.localStorage.getItem('Username')}`)
+        }
+    }
+
 
     //function buat testing fetch
     fetchTest = async () => {
@@ -809,7 +897,7 @@ class SetPackagingBody extends Component {
                 if (this.state.PackageName !== '') {
                     this.state.PackageList.push({
                         "ID": Date.now().toString(),
-                        "PackagingName": this.state.PackageName,
+                        "PackagingName": `Package ${this.state.PackageName.toUpperCase()}`,
                         "PackageNo": 'NaN',
                         "ItemList": [],
                         "Status": "NewBox",
@@ -834,8 +922,8 @@ class SetPackagingBody extends Component {
                             store: new ArrayStore({
                                 data: y
                             })
-                        })
-
+                        }),
+                        PackageName: ""
                     })
 
                     this.setState({ isAddNewPackage: false })
@@ -851,7 +939,7 @@ class SetPackagingBody extends Component {
 
                     const parse = JSON.parse(PackageList)
 
-                    const userEntry = this.state.PackageName
+                    const userEntry = `Package ${this.state.PackageName.toUpperCase()}`
 
                     const result = parse.filter(x => x.PackagingName === userEntry)
 
@@ -859,7 +947,6 @@ class SetPackagingBody extends Component {
 
                     if (result.length >= 1) {
                         this.setState({ isPackageNameSame: true })
-                        this.setState({ isAddNewPackage: false })
                     }
                     if (result.length == 0) {
                         const PackageList = localStorage.getItem('PackageList');
@@ -868,7 +955,7 @@ class SetPackagingBody extends Component {
 
                         parse.push({
                             "ID": Date.now().toString(),
-                            "PackagingName": this.state.PackageName,
+                            "PackagingName": `Package ${this.state.PackageName.toUpperCase()}`,
                             "PackageNo": 'NaN',
                             "ItemList": [],
                             "Status": "NewBox",
@@ -891,7 +978,8 @@ class SetPackagingBody extends Component {
                             dataGridPackage: new DataSource({
                                 store: new ArrayStore({
                                     data: y
-                                })
+                                }),
+                                PackageName: ""
                             })
 
                         })
@@ -920,11 +1008,14 @@ class SetPackagingBody extends Component {
 
             //siapin data yang dibutuhkan
             const local = JSON.parse(localStorage.getItem('PackageList'));
-            const userInputVal = this.state.titleAfterEdit;
+            const userInputVal = 'Package' + " " + this.state.titleAfterEdit.toUpperCase();
             const firstTitle = this.state.editTitle;
 
             //detect ada engga kardus yang namanya sama
             const result = local.filter(x => x.PackagingName === userInputVal);
+
+            // console.log(userInputVal)
+            // console.log(result)
 
             //jika nama sama
             if (result.length >= 1) {
@@ -2398,6 +2489,93 @@ class SetPackagingBody extends Component {
     }
 
 
+    //superUserPass Function
+    EditPackageSuperUser = () => {
+        try {
+            if (this.state.superUserPass == "ds2022") {
+                console.log('superuser password benar')
+                this.setState({
+                    isEditPackageName: true,
+                    superUserPass: "",
+                    isSuperUserEditPackage: false
+                })
+            }
+            else {
+                console.log('superuser password salah')
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+    DeletePackageSuperUser = () => {
+        try {
+            if (this.state.superUserPass == "ds2022") {
+                console.log('super user password benar')
+                this.setState({
+                    isDeletePackage: true,
+                    isSuperUserDeletePackage: false
+                })
+            }
+            else {
+                console.log('password superuser salah')
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+    EditQtyItemSuperUser = () => {
+        try {
+            if (this.state.superUserPass == "ds2022") {
+                console.log('super user password benar')
+                this.setState({
+                    isEditQtyItem: true,
+                    isSuperUserEditQtyItem: false
+                })
+            }
+            else {
+                console.log('super user password salah')
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+    DeleteItemSuperUser = () => {
+        try {
+            if (this.state.superUserPass == "ds2022") {
+                console.log('super user password benar')
+                this.setState({
+                    isDeleteItem: true,
+                    isSuperUserDeleteItem: false
+                })
+            }
+            else {
+                console.log('super user password salah')
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+    EnableEditSuperUser = () => {
+        try {
+            if (this.state.superUserPass == "ds2022") {
+                console.log('super user password benar')
+                this.enableEdit()
+                this.setState({ isSuperUserEnableEdit: false })
+            }
+            else {
+                console.log('super user password salah')
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+
     //function buat print
     print = async () => {
         try {
@@ -2611,7 +2789,7 @@ class SetPackagingBody extends Component {
                     onClick={
                         () => {
                             this.setState({ editTitle: data.values[1] }, () => {
-                                this.setState({ isEditPackageName: true })
+                                this.setState({ isSuperUserEditPackage: true })
                             })
                         }
                     }
@@ -2631,7 +2809,7 @@ class SetPackagingBody extends Component {
                     onClick={
                         () => {
                             this.setState({ editTitle: data.values[1] }, () => {
-                                this.setState({ isDeletePackage: true })
+                                this.setState({ isSuperUserDeletePackage: true })
                             })
                         }
                     }
@@ -2680,7 +2858,7 @@ class SetPackagingBody extends Component {
                     onClick={
                         () => {
                             this.setState({ editTitle: data.values[1] }, () => {
-                                this.setState({ isEditPackageName: true })
+                                this.setState({ isSuperUserEditPackage: true })
                             })
                         }
                     }
@@ -2700,7 +2878,7 @@ class SetPackagingBody extends Component {
                     onClick={
                         () => {
                             this.setState({ editTitle: data.values[1] }, () => {
-                                this.setState({ isDeletePackage: true })
+                                this.setState({ isSuperUserDeletePackage: true })
                             })
                         }
                     }
@@ -2817,7 +2995,7 @@ class SetPackagingBody extends Component {
                     onClick={
                         () => {
                             this.setState({
-                                isEditQtyItem: true,
+                                isSuperUserEditQtyItem: true,
                                 itemName: data.data.ItemName,
                                 itemQty: data.data.Qty,
                                 itemNo: data.data.No
@@ -2839,7 +3017,7 @@ class SetPackagingBody extends Component {
                     onClick={
                         () => {
                             this.setState({
-                                isDeleteItem: true,
+                                isSuperUserDeleteItem: true,
                                 itemName: data.data.ItemName,
                                 itemQty: data.data.Qty,
                                 itemNo: data.data.No
@@ -2872,7 +3050,7 @@ class SetPackagingBody extends Component {
                     onClick={
                         () => {
                             this.setState({
-                                isEditQtyItem: true,
+                                isSuperUserEditQtyItem: true,
                                 itemName: data.data.ItemName,
                                 itemQty: data.data.Qty,
                                 itemNo: data.data.No
@@ -2894,7 +3072,7 @@ class SetPackagingBody extends Component {
                     onClick={
                         () => {
                             this.setState({
-                                isDeleteItem: true,
+                                isSuperUserDeleteItem: true,
                                 itemName: data.data.ItemName,
                                 itemQty: data.data.Qty,
                                 itemNo: data.data.No
@@ -3618,7 +3796,7 @@ class SetPackagingBody extends Component {
                                 }}
                                 stylingMode="contained"
                                 disabled={this.state.enableEditBtn}
-                                onClick={this.enableEdit}
+                                onClick={() => { this.setState({ isSuperUserEnableEdit: true }) }}
                             />
 
                             <Button
@@ -3884,7 +4062,7 @@ class SetPackagingBody extends Component {
                                 stylingMode='contained'
                                 type='default'
                                 width={100}
-                                onClick={() => { this.enableAddNewPackage(); this.disablePackageNameSame() }}
+                                onClick={() => { this.disablePackageNameSame() }}
                             />
                         </div>
                     </Popup>
@@ -4251,8 +4429,8 @@ class SetPackagingBody extends Component {
                         closeOnOutsideClick={true}
                         onHiding={this.disableAddNewPackage}
                         title="Add New Package"
-                        width={775}
-                        height={340}
+                        width={550}
+                        height={300}
                         showTitle={false}
                     >
                         <div>
@@ -4267,14 +4445,26 @@ class SetPackagingBody extends Component {
                                     Add New Package
                                 </h4>
                             </div>
-                            <div>
+                            {/* <div>
                                 <p className="titleOverlay">Package Name : </p>
-                            </div>
+                            </div> */}
 
-                            <div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: 'row'
+                                }}
+                            >
+                                <p>Package</p>
                                 <TextBox
                                     placeholder="Masukkan Nama Package disini"
                                     onValueChange={(y) => { this.setState({ PackageName: y }) }}
+                                    width={450}
+                                    style={{
+                                        marginLeft: "10px"
+                                    }}
+                                    maxLength={1}
+                                    value={""}
                                 />
                             </div>
 
@@ -4333,8 +4523,8 @@ class SetPackagingBody extends Component {
                         visible={this.state.isEditPackageName}
                         closeOnOutsideClick={true}
                         showTitle={false}
-                        width={775}
-                        height={340}
+                        width={550}
+                        height={300}
                         onHiding={this.disableEditPackageName}
                     >
                         <div>
@@ -4350,14 +4540,22 @@ class SetPackagingBody extends Component {
                                 </h4>
                             </div>
 
-                            <div>
-                                <p className="titleOverlay">Package Name : </p>
-                            </div>
-
-                            <div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: 'row'
+                                }}
+                            >
+                                <p>Package</p>
                                 <TextBox
                                     placeholder="Masukkan Nama Package disini"
                                     onValueChange={(y) => { this.setState({ titleAfterEdit: y }) }}
+                                    width={450}
+                                    style={{
+                                        marginLeft: "10px"
+                                    }}
+                                    maxLength={1}
+                                    value={""}
                                 />
                             </div>
                         </div>
@@ -5195,7 +5393,7 @@ class SetPackagingBody extends Component {
                         width={"300px"}
                         height={"300px"}
                     >
-                        <div id="print" style={{ border: "1px solid black" }}>
+                        <div id="print" style={{ border: "0.1px solid black" }}>
                             <p
                                 style={{
                                     // fontWeight: "700",
@@ -5290,7 +5488,7 @@ class SetPackagingBody extends Component {
                                         width: "250px",
                                         marginTop: "8px",
                                         marginBottom: "3px",
-                                        border: "1px solid black",
+                                        border: "0.0001px solid black",
                                         borderCollapse: "collapse"
                                     }}
                                 >
@@ -5300,7 +5498,7 @@ class SetPackagingBody extends Component {
                                             style={{
                                                 fontSize: "4.5px",
                                                 fontWeight: "500",
-                                                border: "1px solid black",
+                                                border: "0.0001px solid black",
                                             }}
                                         >
                                             No
@@ -5310,7 +5508,7 @@ class SetPackagingBody extends Component {
                                             style={{
                                                 fontSize: "4.5px",
                                                 fontWeight: "500",
-                                                border: "1px solid black",
+                                                border: "0.0001px solid black",
                                             }}
                                         >
                                             Nama Barang
@@ -5320,7 +5518,7 @@ class SetPackagingBody extends Component {
                                             style={{
                                                 fontSize: "4.5px",
                                                 fontWeight: "500",
-                                                border: "1px solid black",
+                                                border: "0.0001px solid black",
                                             }}
                                         >
                                             Qty(pcs)
@@ -5331,15 +5529,15 @@ class SetPackagingBody extends Component {
                                     {this.state.print.ItemList.map((x, y) => {
                                         return (
                                             <tr>
-                                                <th style={{ fontSize: "4.5px", border: "0.001px solid black", borderWidth: "0.1px" }}>
+                                                <th style={{ fontSize: "4.5px", border: "0.0001px solid black", borderWidth: "0.1px" }}>
                                                     {this.state.print.ItemList[y].No}
                                                 </th>
 
-                                                <th style={{ fontSize: "4.5px", border: "0.001px solid black", borderWidth: "0.1px" }}>
+                                                <th style={{ fontSize: "4.5px", border: "0.0001px solid black", borderWidth: "0.1px" }}>
                                                     {this.state.print.ItemList[y].ItemName}
                                                 </th>
 
-                                                <th style={{ fontSize: "4.5px", border: "0.001px solid black", borderWidth: "0.1px" }}>
+                                                <th style={{ fontSize: "4.5px", border: "0.0001px solid black", borderWidth: "0.1px" }}>
                                                     {this.state.print.ItemList[y].Qty}
                                                 </th>
                                             </tr>
@@ -5413,7 +5611,6 @@ class SetPackagingBody extends Component {
                         </div>
                     </Popup>
                 </div>
-
                 {/* Popup testing print */}
                 <div>
                     <Popup
@@ -5626,6 +5823,366 @@ class SetPackagingBody extends Component {
                     </Popup>
                 </div >
 
+                {/* Popup superuser edit name package */}
+                <div>
+                    <Popup
+                        visible={this.state.isSuperUserEditPackage}
+                        closeOnOutsideClick={true}
+                        onHiding={this.disableSuperUserEditPackage}
+                        title="Add New Package"
+                        width={600}
+                        height={300}
+                        showTitle={false}
+                    >
+
+                        <h4
+                            style={{
+                                fontWeight: "700",
+                                fontSize: 24,
+                                color: "rgba(82, 87, 92, 1.0)"
+                            }}
+                        >
+                            Konfirmasi Autorisasi
+                        </h4>
+
+                        <div>
+                            <p className="titleOverlay">Masukkan superuser password untuk edit package name : </p>
+                        </div>
+
+                        <div>
+                            <TextBox
+                                placeholder="Masukkan Password Superuser Disini"
+                                onValueChange={(y) => { this.setState({ superUserPass: y }) }}
+                                width={550}
+                                mode={'password'}
+                                value={""}
+                            />
+                        </div>
+
+                        {/* Button Secction */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "flex-end",
+                                marginTop: 30
+
+                            }}
+                        >
+                            <Button
+                                text="Close"
+                                width='80'
+                                type="default"
+                                stylingMode="outlined"
+                                onClick={this.disableSuperUserEditPackage}
+                                elementAttr={this.state.buttonAttributes}
+                            />
+
+                            <div
+                                style={{
+                                    marginLeft: 15
+                                }}
+                            >
+                                <Button
+                                    text="Save"
+                                    width='80'
+                                    type="default"
+                                    elementAttr={this.state.buttonAttributes}
+                                    onClick={this.EditPackageSuperUser}
+                                />
+                            </div>
+                        </div>
+
+                    </Popup>
+                </div>
+                {/* Popup superuser delete name package */}
+                <div>
+                    <Popup
+                        visible={this.state.isSuperUserDeletePackage}
+                        closeOnOutsideClick={true}
+                        onHiding={this.disableSuperUserDeletePackage}
+                        title="Add New Package"
+                        width={600}
+                        height={300}
+                        showTitle={false}
+                    >
+
+                        <h4
+                            style={{
+                                fontWeight: "700",
+                                fontSize: 24,
+                                color: "rgba(82, 87, 92, 1.0)"
+                            }}
+                        >
+                            Konfirmasi Autorisasi
+                        </h4>
+
+                        <div>
+                            <p className="titleOverlay">Masukkan superuser password untuk delete package name : </p>
+                        </div>
+
+                        <div>
+                            <TextBox
+                                placeholder="Masukkan Password Superuser Disini"
+                                onValueChange={(y) => { this.setState({ superUserPass: y }) }}
+                                width={550}
+                                mode={'password'}
+                                value={""}
+                            />
+                        </div>
+
+                        {/* Button Secction */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "flex-end",
+                                marginTop: 30
+
+                            }}
+                        >
+                            <Button
+                                text="Close"
+                                width='80'
+                                type="default"
+                                stylingMode="outlined"
+                                onClick={this.disableSuperUserDeletePackage}
+                                elementAttr={this.state.buttonAttributes}
+                            />
+
+                            <div
+                                style={{
+                                    marginLeft: 15
+                                }}
+                            >
+                                <Button
+                                    text="Save"
+                                    width='80'
+                                    type="default"
+                                    elementAttr={this.state.buttonAttributes}
+                                    onClick={this.DeletePackageSuperUser}
+                                />
+                            </div>
+                        </div>
+
+                    </Popup>
+                </div>
+                {/* Popup superuser edit qty item */}
+                <div>
+                    <Popup
+                        visible={this.state.isSuperUserEditQtyItem}
+                        closeOnOutsideClick={true}
+                        onHiding={this.disableSuperUserEditQtyItem}
+                        title="Add New Package"
+                        width={600}
+                        height={300}
+                        showTitle={false}
+                    >
+
+                        <h4
+                            style={{
+                                fontWeight: "700",
+                                fontSize: 24,
+                                color: "rgba(82, 87, 92, 1.0)"
+                            }}
+                        >
+                            Konfirmasi Autorisasi
+                        </h4>
+
+                        <div>
+                            <p className="titleOverlay">Masukkan superuser password untuk edit qty item : </p>
+                        </div>
+
+                        <div>
+                            <TextBox
+                                placeholder="Masukkan Password Superuser Disini"
+                                onValueChange={(y) => { this.setState({ superUserPass: y }) }}
+                                width={550}
+                                mode={'password'}
+                                value={""}
+                            />
+                        </div>
+
+                        {/* Button Secction */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "flex-end",
+                                marginTop: 30
+
+                            }}
+                        >
+                            <Button
+                                text="Close"
+                                width='80'
+                                type="default"
+                                stylingMode="outlined"
+                                onClick={this.disableSuperUserEditQtyItem}
+                                elementAttr={this.state.buttonAttributes}
+                            />
+
+                            <div
+                                style={{
+                                    marginLeft: 15
+                                }}
+                            >
+                                <Button
+                                    text="Save"
+                                    width='80'
+                                    type="default"
+                                    elementAttr={this.state.buttonAttributes}
+                                    onClick={this.EditQtyItemSuperUser}
+                                />
+                            </div>
+                        </div>
+
+                    </Popup>
+                </div>
+                {/* Popup superuser delete item */}
+                <div>
+                    <Popup
+                        visible={this.state.isSuperUserDeleteItem}
+                        closeOnOutsideClick={true}
+                        onHiding={this.disableSuperUserDeleteItem}
+                        title="Add New Package"
+                        width={600}
+                        height={300}
+                        showTitle={false}
+                    >
+
+                        <h4
+                            style={{
+                                fontWeight: "700",
+                                fontSize: 24,
+                                color: "rgba(82, 87, 92, 1.0)"
+                            }}
+                        >
+                            Konfirmasi Autorisasi
+                        </h4>
+
+                        <div>
+                            <p className="titleOverlay">Masukkan superuser password untuk delete item : </p>
+                        </div>
+
+                        <div>
+                            <TextBox
+                                placeholder="Masukkan Password Superuser Disini"
+                                onValueChange={(y) => { this.setState({ superUserPass: y }) }}
+                                width={550}
+                                mode={'password'}
+                                value={""}
+                            />
+                        </div>
+
+                        {/* Button Secction */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "flex-end",
+                                marginTop: 30
+
+                            }}
+                        >
+                            <Button
+                                text="Close"
+                                width='80'
+                                type="default"
+                                stylingMode="outlined"
+                                onClick={this.disableSuperUserDeleteItem}
+                                elementAttr={this.state.buttonAttributes}
+                            />
+
+                            <div
+                                style={{
+                                    marginLeft: 15
+                                }}
+                            >
+                                <Button
+                                    text="Save"
+                                    width='80'
+                                    type="default"
+                                    elementAttr={this.state.buttonAttributes}
+                                    onClick={this.DeleteItemSuperUser}
+                                />
+                            </div>
+                        </div>
+
+                    </Popup>
+                </div>
+                {/* Popup superuser enable edit */}
+                <div>
+                    <Popup
+                        visible={this.state.isSuperUserEnableEdit}
+                        closeOnOutsideClick={true}
+                        onHiding={this.disableSuperUserEnableEdit}
+                        title="Add New Package"
+                        width={600}
+                        height={300}
+                        showTitle={false}
+                    >
+
+                        <h4
+                            style={{
+                                fontWeight: "700",
+                                fontSize: 24,
+                                color: "rgba(82, 87, 92, 1.0)"
+                            }}
+                        >
+                            Konfirmasi Autorisasi
+                        </h4>
+
+                        <div>
+                            <p className="titleOverlay">Masukkan superuser password untuk enable edit mode : </p>
+                        </div>
+
+                        <div>
+                            <TextBox
+                                placeholder="Masukkan Password Superuser Disini"
+                                onValueChange={(y) => { this.setState({ superUserPass: y }) }}
+                                width={550}
+                                mode={'password'}
+                                value={""}
+                            />
+                        </div>
+
+                        {/* Button Secction */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "flex-end",
+                                marginTop: 30
+
+                            }}
+                        >
+                            <Button
+                                text="Close"
+                                width='80'
+                                type="default"
+                                stylingMode="outlined"
+                                onClick={this.disableSuperUserEnableEdit}
+                                elementAttr={this.state.buttonAttributes}
+                            />
+
+                            <div
+                                style={{
+                                    marginLeft: 15
+                                }}
+                            >
+                                <Button
+                                    text="Save"
+                                    width='80'
+                                    type="default"
+                                    elementAttr={this.state.buttonAttributes}
+                                    onClick={this.EnableEditSuperUser}
+                                />
+                            </div>
+                        </div>
+
+                    </Popup>
+                </div>
 
             </div >
         );
