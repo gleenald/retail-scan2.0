@@ -25,7 +25,8 @@ import {
 import {
     Button,
     Popup,
-    TextBox
+    TextBox,
+    DropDownButton,
 } from 'devextreme-react';
 
 //import react-router-dom
@@ -169,7 +170,27 @@ class SetPackagingBody extends Component {
                 "ItemList": [],
                 "Packer": "",
                 "PackingDate": ""
-            }
+            },
+
+            displayPrint1: ['block'],
+            displayPrint2: ['block', 'none'],
+            displayPrint3: ['block', 'none', 'none'],
+            displayPrint4: [],
+
+            dropDown2: [
+                { id: 0, text: "Page 1" },
+                { id: 1, text: "Page 2" }
+            ],
+            dropDown3: [
+                { id: 0, text: "Page 1" },
+                { id: 1, text: "Page 2" },
+                { id: 2, text: "Page 3" }
+            ],
+            dropDown4: [],
+
+            result: [],
+            awal: [],
+            akhir: [],
         }
     }
 
@@ -897,7 +918,7 @@ class SetPackagingBody extends Component {
                 if (this.state.PackageName !== '') {
                     this.state.PackageList.push({
                         "ID": Date.now().toString(),
-                        "PackagingName": `Package ${this.state.PackageName.toUpperCase()}`,
+                        "PackagingName": `Package No. ${this.state.PackageName.toUpperCase()}`,
                         "PackageNo": 'NaN',
                         "ItemList": [],
                         "Status": "NewBox",
@@ -955,7 +976,7 @@ class SetPackagingBody extends Component {
 
                         parse.push({
                             "ID": Date.now().toString(),
-                            "PackagingName": `Package ${this.state.PackageName.toUpperCase()}`,
+                            "PackagingName": `Package No. ${this.state.PackageName.toUpperCase()}`,
                             "PackageNo": 'NaN',
                             "ItemList": [],
                             "Status": "NewBox",
@@ -1008,7 +1029,7 @@ class SetPackagingBody extends Component {
 
             //siapin data yang dibutuhkan
             const local = JSON.parse(localStorage.getItem('PackageList'));
-            const userInputVal = 'Package' + " " + this.state.titleAfterEdit.toUpperCase();
+            const userInputVal = 'Package No.' + " " + this.state.titleAfterEdit.toUpperCase();
             const firstTitle = this.state.editTitle;
 
             //detect ada engga kardus yang namanya sama
@@ -2617,22 +2638,167 @@ class SetPackagingBody extends Component {
                     ItemList[i].No = parseInt(i) + 1
                 }
 
+                if (ItemList.length < 6) {
+                    let count = 6 - ItemList.length
+
+                    for (let i = 0; i < count; i++) {
+                        ItemList.push({ ItemName: "empty" })
+                    }
+                }
+
+                console.log(ItemList);
+
                 //console.log(data.Packagings.find(isSame))
                 this.state.print["PackageName"] = data.Packagings.find(isSame).PackageName
-                this.state.print["CustomerName"] = data.CustomerName //masih null
-                this.state.print["Notice"] = data.Notice //masih null
-                this.state.print["PickNo"] = null //untuk pickno ini ambil properties yang mana ya?
-                this.state.print["PONo"] = null //ini ambil dari PONo dari properties apa ya?
-                this.state.print["Packer"] = data.Username //ini ambil dari properties username ya?
-                this.state.print["PackingDate"] = moment(data.Packagings.find(isSame).PackingDate).format("D MMMM YYYY")
+                this.state.print["CustomerName"] = "PT. Catur Mitra Sejati Sentosa" //masih null
+                this.state.print["Notice"] = "Kirim K M10 Teluk Jambe EXPO PO 04 MEI 2022 (22/03/2022). JANGAN LUPA INI PACKERNYA SALMAN" //masih null
+                this.state.print["PickNo"] = "35754" //untuk pickno ini ambil properties yang mana ya?
+                this.state.print["PONo"] = "220007503" //ini ambil dari PONo dari properties apa ya?
+                this.state.print["Packer"] = "Salman" //ini ambil dari properties username ya?
+                this.state.print["PackingDate"] = moment(data.Packagings.find(isSame).PackingDate).format("YYYY/MM/D")
                 this.state.print["ItemList"] = ItemList
+
 
                 this.setState({
                     isLoading: false,
                     isPrint: true,
-                    //isPrintDisplay: true
+                    isPrintDisplay: true
                 })
-                console.log(this.state.print)
+
+                if (this.state.print["ItemList"].length >= 28) {
+                    const item_list_len = this.state.print["ItemList"].length
+                    const len_page_one = item_list_len - 10;
+                    const modulus = len_page_one % 18
+
+                    if (modulus == 0) {
+                        const total_page = (len_page_one / 18) + 2;
+                        //buat display status
+                        let displayArr = [];
+
+                        for (var i = 0; i < total_page; i++) {
+                            if (i == 0) {
+                                displayArr.push('block')
+                            }
+                            if (i != 0) {
+                                displayArr.push('none')
+                            }
+                        }
+
+                        this.setState({ displayPrint4: displayArr }, () => {
+                            console.log(this.state.displayPrint4)
+                        })
+                        //buat dropdown
+                        let dropDown = []
+
+                        for (var i = 0; i < total_page; i++) {
+                            dropDown.push({
+                                id: i,
+                                text: `Page ${i + 1}`
+                            })
+                        }
+
+                        this.setState({ dropDown4: dropDown }, () => {
+                            console.log(this.state.dropDown4)
+                        })
+
+                        //buat idx slice
+                        let count = total_page - 2;
+                        let result = [];
+                        let awal = [10];
+                        let akhir = [];
+
+                        for (var i = 0; i < count; i++) {
+                            result.push(i)
+                        }
+
+                        for (var i = 0; i < count; i++) {
+                            awal.push(awal[i] + 18)
+                        }
+
+                        for (var i = 0; i < count; i++) {
+                            if (akhir.length == 0) {
+                                akhir.push(10 + 18)
+                            }
+                            if (akhir.length != 0) {
+                                akhir.push(akhir[i] + 18)
+                            }
+                        }
+
+                        this.setState({
+                            result: result,
+                            awal: awal,
+                            akhir: akhir
+                        }, () => { console.log(`${this.state.result}, ${this.state.awal}, ${this.state.akhir}`) })
+                    }
+                    if (modulus != 0) {
+                        const total_page = Math.floor(len_page_one / 18) + 2;
+
+                        let displayArr = [];
+
+                        for (var i = 0; i < total_page; i++) {
+                            if (i == 0) {
+                                displayArr.push('block')
+                            }
+                            if (i != 0) {
+                                displayArr.push('none')
+                            }
+                        }
+
+                        this.setState({ displayPrint4: displayArr }, () => {
+                            console.log(this.state.displayPrint4)
+                        })
+
+                        //buat dropdown
+                        let dropDown = [];
+
+                        for (var i = 0; i < total_page; i++) {
+                            dropDown.push({
+                                id: i,
+                                text: `Page ${i + 1}`
+                            })
+                        }
+
+                        this.setState({ dropDown4: dropDown }, () => {
+                            console.log(this.state.dropDown4)
+                        })
+
+                        //buat idx slice
+                        let count = total_page - 2;
+                        let result = [];
+                        let awal = [];
+                        let akhir = [];
+                        console.log(`count ${count}`)
+                        for (var i = 0; i < count; i++) {
+                            result.push(i)
+                        }
+
+                        for (var i = 0; i < count; i++) {
+                            if (i == 0) {
+                                awal.push(10)
+                            }
+                            if (i != 0) {
+                                awal.push(awal[i - 1] + 18)
+                            }
+                        }
+
+                        for (var i = 0; i < count; i++) {
+                            if (i == 0) {
+                                akhir.push(10 + 18)
+                            }
+                            if (i != 0) {
+                                akhir.push(akhir[i - 1] + 18)
+                            }
+                        }
+
+                        this.setState({
+                            result: result,
+                            awal: awal,
+                            akhir: akhir
+                        }, () => { console.log(`${this.state.result}, ${this.state.awal}, ${this.state.akhir}`) })
+
+                    }
+                }
+
             }
             if (stat >= 400 && stat <= 500) {
                 //keluarin alert buat user
@@ -2679,7 +2845,7 @@ class SetPackagingBody extends Component {
                 format: [173.64, 260.477]
             })
 
-            doc.html(document.querySelector("#print"), {
+            doc.html(document.querySelector("#print2"), {
                 callback: function (pdf) {
                     pdf.save('myfile.pdf');
                 }
@@ -3482,6 +3648,2593 @@ class SetPackagingBody extends Component {
         })
     }
 
+    renderTable = () => {
+        const item_list = this.state.print["ItemList"]
+        const item_list_len = this.state.print["ItemList"].length
+
+        if (item_list_len > 0 && item_list_len <= 6) {
+            return (
+                <div>
+                    <div
+                        style={{
+                            border: "2px solid black",
+                            height: "60vh",
+                            width: "50vw",
+                            display: this.state.displayPrint1[0]
+                        }}
+                    >
+                        {/* Package Name Section */}
+                        <div>
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    marginLeft: "2px",
+                                    fontSize: 16,
+                                    marginTop: "0.5vh"
+                                }}
+                            >
+                                {this.state.print['PackageName'].toUpperCase()}
+                            </p>
+                        </div>
+
+                        {/* Alert barang mudah pecah */}
+                        <div
+                            style={{
+                                borderBottom: "2px solid black",
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginTop: "-3.0vh",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    fontSize: 18,
+                                    marginBottom: "-0.01vh"
+                                }}
+                            >
+                                JANGAN DITERIMA BILA PEMBUNGKUS / SEAL RUSAK
+                            </p>
+                        </div>
+
+                        {/* Info1 Section */}
+                        <div
+                            style={{
+                                marginTop: "-0.7vh",
+                                marginBottom: "-0.7vh"
+                            }}
+                        >
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    fontSize: 15,
+                                }}
+                            >
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["CustomerName"].toUpperCase()}
+                            </p>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    // backgroundColor:"green",
+                                    marginTop: "-2.7vh",
+                                    marginLeft: "2px",
+                                    height: "7.3vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                </p>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                        }}
+                                    >
+                                        {this.state.print["Notice"].toUpperCase()}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    marginTop: "-0.5vh",
+                                    fontSize: 15,
+                                }}
+                            >
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PickNo"]}
+                            </p>
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    marginTop: "-1vh",
+                                    fontSize: 15,
+                                }}
+                            >
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PONo"]}
+                            </p>
+
+                        </div>
+
+                        {/* Table Section */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: 'center'
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    width: "750px",
+                                    borderCollapse: "collapse",
+                                    borderBottom: "2px solid black"
+                                }}
+                            >
+                                <tr>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderLeft: "0px",
+                                            height: "3.3vh"
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            height: "3.3vh"
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderRight: "0px",
+                                            height: "3.3vh"
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+
+
+
+                                </tr>
+
+                                {item_list.map((element, y, z) => {
+                                    if (element.ItemName == 'empty') {
+                                        return (
+                                            <tr
+                                            >
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "3.3vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "3.3vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderTop: "0px",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "3.3vh"
+                                                    }}
+                                                >
+                                                    {item_list[y].No}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "3.3vh",
+                                                    }}
+                                                >
+                                                    {item_list[y].ItemName}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800"
+                                                    }}
+                                                >
+                                                    {item_list[y].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                })}
+                            </table>
+
+                        </div>
+
+                        {/* Info2 & Alert 2 Section */}
+                        <div
+                            style={{
+
+                                marginTop: "-1.25vh",
+                                //backgroundColor:"yellowgreen"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    height: "5.5vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
+                                </p>
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                        marginTop: "-1.25vh"
+                                    }}
+                                >
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
+                                </p>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "flex-start",
+                                    height: "4vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 16,
+                                        marginLeft: "2px"
+                                    }}
+                                >
+                                    JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        if (item_list_len > 6 && item_list_len <= 10) {
+
+            return (
+                <div>
+                    {/* Halaman Pertama (Header + Tabel 7-10 item) */}
+                    <div
+                        style={{
+                            border: "2px solid black",
+                            height: "55.5vh",
+                            width: "50vw",
+                            backgroundColor: "white",
+                            display: this.state.displayPrint2[0]
+                        }}
+                    >
+                        {/* Package Name Section */}
+                        <div>
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    marginLeft: "2px",
+                                    fontSize: 16,
+                                    marginTop: "0.5vh"
+                                }}
+                            >
+                                Package No. A
+                            </p>
+                        </div>
+
+                        {/* Alert barang mudah pecah */}
+                        <div
+                            style={{
+                                borderBottom: "2px solid black",
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginTop: "-3.0vh",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    fontSize: 18,
+                                    marginBottom: "-0.01vh"
+                                }}
+                            >
+                                JANGAN DITERIMA BILA PEMBUNGKUS / SEAL RUSAK
+                            </p>
+                        </div>
+
+                        {/* Info1 Section */}
+                        <div
+                            style={{
+                                marginTop: "-0.7vh",
+                                marginBottom: "-0.7vh"
+                            }}
+                        >
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    fontSize: 15,
+                                }}
+                            >
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                            </p>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    // backgroundColor:"green",
+                                    marginTop: "-2.7vh",
+                                    marginLeft: "2px",
+                                    height: "7.3vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                </p>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                        }}
+                                    >
+                                        LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                    </p>
+                                </div>
+                            </div>
+
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    marginTop: "-0.5vh",
+                                    fontSize: 15,
+                                }}
+                            >
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                            </p>
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    marginTop: "-1vh",
+                                    fontSize: 15,
+                                }}
+                            >
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                            </p>
+
+                        </div>
+
+                        {/* Table Section */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: 'center'
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    width: "750px",
+                                    borderCollapse: "collapse",
+                                    //borderBottom: "2px solid black"
+                                }}
+                            >
+                                <tr>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderLeft: "0px",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderRight: "0px",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+
+
+
+                                </tr>
+
+                                {item_list.map((element, y, z) => {
+                                    if (element.ItemName == 'empty') {
+                                        return (
+                                            <tr
+                                            >
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.7vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.7vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderTop: "0px",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list[y].No}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list[y].ItemName}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderBottom: "0px",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {item_list[y].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                })}
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div
+                        style={{
+                            border: "2px solid black",
+                            height: "60vh",
+                            width: "50vw",
+                            backgroundColor: "white",
+                            marginTop: "10px",
+                            marginBottom: "10px",
+                            display: this.state.displayPrint2[1]
+                        }}
+                    >
+                        {/* Info2 & Alert 2 Section */}
+                        <div
+                            style={{
+
+                                marginTop: "-1.25vh",
+                                //backgroundColor:"yellowgreen"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    height: "5.5vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
+                                </p>
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                        marginTop: "-1.25vh"
+                                    }}
+                                >
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
+                                </p>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "flex-start",
+                                    height: "4vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 16,
+                                        marginLeft: "2px"
+                                    }}
+                                >
+                                    JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+
+
+        }
+        if (item_list_len > 10 && item_list_len < 25) {
+            let itemList1 = item_list.slice(0, 10)
+            let itemList2 = item_list.slice(10, item_list_len)
+
+            return (
+                <div>
+                    {/* halaman 1 (header + tabel 10 jenis item) */}
+                    <div
+                        style={{
+                            border: "2px solid black",
+                            height: "60vh",
+                            width: "50vw",
+                            backgroundColor: "white",
+                            display: this.state.displayPrint2[0]
+                        }}
+                    >
+                        {/* Package Name Section */}
+                        <div>
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    marginLeft: "2px",
+                                    fontSize: 16,
+                                    marginTop: "0.5vh"
+                                }}
+                            >
+                                Package No. A
+                            </p>
+                        </div>
+
+                        {/* Alert barang mudah pecah */}
+                        <div
+                            style={{
+                                borderBottom: "2px solid black",
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginTop: "-3.0vh",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    fontSize: 18,
+                                    marginBottom: "-0.01vh"
+                                }}
+                            >
+                                JANGAN DITERIMA BILA PEMBUNGKUS / SEAL RUSAK
+                            </p>
+                        </div>
+
+                        {/* Info1 Section */}
+                        <div
+                            style={{
+                                marginTop: "-0.7vh",
+                                marginBottom: "-0.7vh"
+                            }}
+                        >
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    fontSize: 15,
+                                }}
+                            >
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                            </p>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    // backgroundColor:"green",
+                                    marginTop: "-2.7vh",
+                                    marginLeft: "2px",
+                                    height: "7.3vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                </p>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                        }}
+                                    >
+                                        LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                    </p>
+                                </div>
+                            </div>
+
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    marginTop: "-0.5vh",
+                                    fontSize: 15,
+                                }}
+                            >
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                            </p>
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    marginTop: "-1vh",
+                                    fontSize: 15,
+                                }}
+                            >
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                            </p>
+
+                        </div>
+
+                        {/* Table Section */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: 'center'
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    width: "750px",
+                                    borderCollapse: "collapse",
+                                    //borderBottom: "2px solid black"
+                                }}
+                            >
+                                <tr>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderLeft: "0px",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderRight: "0px",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+
+
+
+                                </tr>
+
+                                {itemList1.map((element, y, z) => {
+                                    if (element.ItemName == 'empty') {
+                                        return (
+                                            <tr
+                                            >
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.7vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.7vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderTop: "0px",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {itemList1[y].No}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {itemList1[y].ItemName}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderBottom: "0px",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {itemList1[y].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                })}
+                            </table>
+
+                        </div>
+                    </div>
+
+                    {/* halaman 2 tabel item sisanya + footer packer */}
+                    <div
+                        style={{
+                            border: "2px solid black",
+                            height: "60vh",
+                            width: "50vw",
+                            backgroundColor: "white",
+                            display: this.state.displayPrint2[1],
+                            marginTop: "10px"
+                        }}
+                    >
+                        {/* Table Section */}
+                        <div>
+                            <table
+                                style={{
+                                    width: "50vw",
+                                    borderCollapse: "collapse",
+                                }}
+                            >
+                                <tr>
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderTop: "0px",
+                                            borderLeft: "0px",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            height: "3.0vh",
+                                            borderTop: "0px",
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderRight: "0px",
+                                            height: "3.0vh",
+                                            borderTop: "0px",
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+                                </tr>
+                                {itemList2.map((element, y, z) => {
+                                    return (
+                                        <tr>
+                                            <th
+                                                style={{
+                                                    border: "2px solid black",
+                                                    fontSize: 14,
+                                                    fontWeight: "800",
+                                                    height: "2.7vh",
+                                                    //borderBottom: "0px"
+                                                }}
+                                            >
+                                                {itemList2[y].No}
+                                            </th>
+                                            <th
+                                                style={{
+                                                    border: "2px solid black",
+                                                    fontSize: 14,
+                                                    fontWeight: "800",
+                                                    textAlign: "left",
+                                                    height: "2.82vh",
+                                                    //borderBottom: "0px"
+                                                }}
+                                            >
+                                                {itemList2[y].ItemName}
+                                            </th>
+                                            <th
+                                                style={{
+                                                    border: "2px solid black",
+                                                    borderRight: "0px",
+                                                    fontSize: 14,
+                                                    fontWeight: "800",
+                                                    height: "2.82vh",
+                                                }}
+                                            >
+                                                {itemList2[y].Qty}
+                                            </th>
+                                        </tr>
+                                    )
+                                })}
+                            </table>
+                        </div>
+
+                        {/* Info2 & Alert 2 Section */}
+                        <div
+                            style={{
+
+                                marginTop: "-1.25vh",
+                                //backgroundColor:"yellowgreen"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    height: "5.5vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
+                                </p>
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                        marginTop: "-1.25vh"
+                                    }}
+                                >
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
+                                </p>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "flex-start",
+                                    height: "4vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 16,
+                                        marginLeft: "2px"
+                                    }}
+                                >
+                                    JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            )
+        }
+        if (item_list_len == 25 || item_list_len == 26 || item_list_len == 27) {
+            let itemList1 = item_list.slice(0, 10)
+            let itemList2 = item_list.slice(10, item_list_len)
+
+            return (
+                <div>
+                    {/* halaman 1 (header + tabel 10 jenis item) */}
+                    <div
+                        style={{
+                            border: "2px solid black",
+                            height: "60vh",
+                            width: "50vw",
+                            backgroundColor: "white",
+                            display: this.state.displayPrint3[0]
+                        }}
+                    >
+                        {/* Package Name Section */}
+                        <div>
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    marginLeft: "2px",
+                                    fontSize: 16,
+                                    marginTop: "0.5vh"
+                                }}
+                            >
+                                Package No. A
+                            </p>
+                        </div>
+
+                        {/* Alert barang mudah pecah */}
+                        <div
+                            style={{
+                                borderBottom: "2px solid black",
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginTop: "-3.0vh",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    fontSize: 18,
+                                    marginBottom: "-0.01vh"
+                                }}
+                            >
+                                JANGAN DITERIMA BILA PEMBUNGKUS / SEAL RUSAK
+                            </p>
+                        </div>
+
+                        {/* Info1 Section */}
+                        <div
+                            style={{
+                                marginTop: "-0.7vh",
+                                marginBottom: "-0.7vh"
+                            }}
+                        >
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    fontSize: 15,
+                                }}
+                            >
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                            </p>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    // backgroundColor:"green",
+                                    marginTop: "-2.7vh",
+                                    marginLeft: "2px",
+                                    height: "7.3vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                </p>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                        }}
+                                    >
+                                        LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                    </p>
+                                </div>
+                            </div>
+
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    marginTop: "-0.5vh",
+                                    fontSize: 15,
+                                }}
+                            >
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                            </p>
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    marginTop: "-1vh",
+                                    fontSize: 15,
+                                }}
+                            >
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                            </p>
+
+                        </div>
+
+                        {/* Table Section */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: 'center'
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    width: "750px",
+                                    borderCollapse: "collapse",
+                                    //borderBottom: "2px solid black"
+                                }}
+                            >
+                                <tr>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderLeft: "0px",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderRight: "0px",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+
+
+
+                                </tr>
+
+                                {itemList1.map((element, y, z) => {
+                                    if (element.ItemName == 'empty') {
+                                        return (
+                                            <tr
+                                            >
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.7vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.7vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderTop: "0px",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {itemList1[y].No}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {itemList1[y].ItemName}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderBottom: "0px",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {itemList1[y].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                })}
+                            </table>
+
+                        </div>
+                    </div>
+
+                    {/* halaman 2 (lanjutan tabel item) */}
+                    <div
+                        style={{
+                            border: "2px solid black",
+                            height: "60vh",
+                            width: "50vw",
+                            backgroundColor: "white",
+                            display: this.state.displayPrint3[1],
+                            marginTop: "10px"
+                        }}
+                    >
+                        <div>
+                            <table
+                                style={{
+                                    width: "50vw",
+                                    borderCollapse: "collapse",
+                                }}
+                            >
+                                <tr>
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderTop: "0px",
+                                            borderLeft: "0px",
+                                            height: "3.0vh"
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            height: "3.0vh",
+                                            borderTop: "0px",
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: "800",
+                                            border: "2px solid black",
+                                            borderRight: "0px",
+                                            height: "3.0vh",
+                                            borderTop: "0px",
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+                                </tr>
+
+                                {itemList2.map((element, y, z) => {
+                                    return (
+                                        <tr>
+                                            <th
+                                                style={{
+                                                    border: "2px solid black",
+                                                    fontSize: 14,
+                                                    fontWeight: "800",
+                                                    height: "2.7vh",
+                                                    //borderBottom: "0px"
+                                                }}
+                                            >
+                                                {itemList2[y].No}
+                                            </th>
+                                            <th
+                                                style={{
+                                                    border: "2px solid black",
+                                                    fontSize: 14,
+                                                    fontWeight: "800",
+                                                    textAlign: "left",
+                                                    height: "2.82vh",
+                                                    //borderBottom: "0px"
+                                                }}
+                                            >
+                                                {itemList2[y].ItemName}
+                                            </th>
+                                            <th
+                                                style={{
+                                                    border: "2px solid black",
+                                                    borderRight: "0px",
+                                                    fontSize: 14,
+                                                    fontWeight: "800",
+                                                    height: "2.82vh",
+                                                }}
+                                            >
+                                                {itemList2[y].Qty}
+                                            </th>
+                                        </tr>
+                                    )
+                                })}
+
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* halaman 3 (footer packer) */}
+                    <div
+                        style={{
+                            border: "2px solid black",
+                            height: "60vh",
+                            width: "50vw",
+                            backgroundColor: "white",
+                            display: this.state.displayPrint3[2],
+                            marginTop: '10px'
+                        }}
+                    >
+                        {/* Info2 & Alert 2 Section */}
+                        <div
+                            style={{
+
+                                marginTop: "-1.25vh",
+                                //backgroundColor:"yellowgreen"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    height: "5.5vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
+                                </p>
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                        marginTop: "-1.25vh"
+                                    }}
+                                >
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
+                                </p>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "flex-start",
+                                    height: "4vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 16,
+                                        marginLeft: "2px"
+                                    }}
+                                >
+                                    JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        if (item_list_len >= 28) {
+            const len_page_one = item_list_len - 10
+            const modulus = len_page_one % 18
+
+            if (modulus == 0) {
+                let last = this.state.displayPrint4.length - 1
+                return (
+                    <div>
+                        {/* halaman 1 (header + tabel 10 biji) */}
+                        <div
+                            style={{
+                                border: "2px solid black",
+                                height: "60vh",
+                                width: "50vw",
+                                backgroundColor: "white",
+                                display: this.state.displayPrint4[0]
+                            }}
+                        >
+                            {/* Package Name Section */}
+                            <div>
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        marginLeft: "2px",
+                                        fontSize: 16,
+                                        marginTop: "0.5vh"
+                                    }}
+                                >
+                                    Package No. A
+                                </p>
+                            </div>
+
+                            {/* Alert barang mudah pecah */}
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginTop: "-3.0vh",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 18,
+                                        marginBottom: "-0.01vh"
+                                    }}
+                                >
+                                    JANGAN DITERIMA BILA PEMBUNGKUS / SEAL RUSAK
+                                </p>
+                            </div>
+
+                            {/* Info1 Section */}
+                            <div
+                                style={{
+                                    marginTop: "-0.7vh",
+                                    marginBottom: "-0.7vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                                </p>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        // backgroundColor:"green",
+                                        marginTop: "-2.7vh",
+                                        marginLeft: "2px",
+                                        height: "7.3vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                        }}
+                                    >
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                    </p>
+                                    <div>
+                                        <p
+                                            style={{
+                                                fontWeight: "800",
+                                            }}
+                                        >
+                                            LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        marginTop: "-0.5vh",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                </p>
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        marginTop: "-1vh",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                </p>
+
+                            </div>
+
+                            {/* Table Section */}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: 'center'
+                                }}
+                                className="print-table"
+                            >
+                                <table
+                                    style={{
+                                        width: "750px",
+                                        borderCollapse: "collapse",
+                                        //borderBottom: "2px solid black"
+                                    }}
+                                >
+                                    <tr>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderLeft: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NO
+                                        </th>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </th>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderRight: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </th>
+                                    </tr>
+
+                                    {item_list.slice(0, 10).map((element, y, z) => {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list.slice(0, 10)[y].No}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list.slice(0, 10)[y].ItemName}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderBottom: "0px",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {item_list.slice(0, 10)[y].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    })}
+
+                                </table>
+                            </div>
+
+                        </div>
+
+                        {/* halaman tabel item 18 biji */}
+                        {this.state.result.map((element, idx) => {
+                            return (
+                                <div
+                                    style={{
+                                        border: "2px solid black",
+                                        height: "60vh",
+                                        width: "50vw",
+                                        backgroundColor: "white",
+                                        display: this.state.displayPrint4[idx + 1],
+                                        marginTop: "10px"
+                                    }}
+                                >
+                                    <div>
+                                        <table
+                                            style={{
+                                                width: "50vw",
+                                                borderCollapse: "collapse",
+                                            }}
+                                        >
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        borderTop: "0px",
+                                                        borderLeft: "0px",
+                                                        height: "3.0vh"
+                                                    }}
+                                                >
+                                                    NO
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        height: "3.0vh",
+                                                        borderTop: "0px",
+                                                    }}
+                                                >
+                                                    NAMA BARANG
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        height: "3.0vh",
+                                                        borderTop: "0px",
+                                                    }}
+                                                >
+                                                    QTY PCS
+                                                </th>
+
+
+                                            </tr>
+
+                                            {item_list.slice(this.state.awal[idx], this.state.akhir[idx]).map((element, index, self) => {
+
+                                                return (
+                                                    <tr>
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                height: "2.67vh",
+                                                                //borderBottom: "0px"
+                                                            }}
+                                                        >
+                                                            {item_list.slice(this.state.awal[idx], this.state.akhir[idx])[index]["No"]}
+                                                        </th>
+
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                textAlign: "left",
+                                                                height: "2.67vh",
+                                                                //borderBottom: "0px"
+                                                            }}
+                                                        >
+                                                            {item_list.slice(this.state.awal[idx], this.state.akhir[idx])[index]["ItemName"]}
+                                                        </th>
+
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                borderRight: "0px",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                height: "2.67vh",
+                                                            }}
+                                                        >
+                                                            {item_list.slice(this.state.awal[idx], this.state.akhir[idx])[index]["Qty"]}
+                                                        </th>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </table>
+                                    </div>
+
+                                </div>
+                            )
+                        })}
+
+                        {/* halaman terakhir (footer packer) */}
+                        <div
+                            style={{
+                                border: "2px solid black",
+                                height: "60vh",
+                                width: "50vw",
+                                backgroundColor: "white",
+                                marginTop: "10px",
+                                marginBottom: "10px",
+                                display: this.state.displayPrint4[last]
+                            }}
+                        >
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    height: "5.5vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
+                                </p>
+
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                        marginTop: "-1.25vh"
+                                    }}
+                                >
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
+                                </p>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "flex-start",
+                                    height: "4vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 16,
+                                        marginLeft: "2px"
+                                    }}
+                                >
+                                    JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+            if (modulus != 0) {
+                let last = this.state.displayPrint4.length - 1
+                return (
+                    <div>
+                        {/* halaman 1 (header + tabel 10 biji) */}
+                        <div
+                            style={{
+                                border: "2px solid black",
+                                height: "60vh",
+                                width: "50vw",
+                                backgroundColor: "white",
+                                display: this.state.displayPrint4[0]
+                            }}
+                        >
+                            {/* Package Name Section */}
+                            <div>
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        marginLeft: "2px",
+                                        fontSize: 16,
+                                        marginTop: "0.5vh"
+                                    }}
+                                >
+                                    Package No. A
+                                </p>
+                            </div>
+
+                            {/* Alert barang mudah pecah */}
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginTop: "-3.0vh",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 18,
+                                        marginBottom: "-0.01vh"
+                                    }}
+                                >
+                                    JANGAN DITERIMA BILA PEMBUNGKUS / SEAL RUSAK
+                                </p>
+                            </div>
+
+                            {/* Info1 Section */}
+                            <div
+                                style={{
+                                    marginTop: "-0.7vh",
+                                    marginBottom: "-0.7vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                                </p>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        // backgroundColor:"green",
+                                        marginTop: "-2.7vh",
+                                        marginLeft: "2px",
+                                        height: "7.3vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                        }}
+                                    >
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                    </p>
+                                    <div>
+                                        <p
+                                            style={{
+                                                fontWeight: "800",
+                                            }}
+                                        >
+                                            LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        marginTop: "-0.5vh",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                </p>
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        marginTop: "-1vh",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                </p>
+
+                            </div>
+
+                            {/* Table Section */}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: 'center'
+                                }}
+                                className="print-table"
+                            >
+                                <table
+                                    style={{
+                                        width: "750px",
+                                        borderCollapse: "collapse",
+                                        //borderBottom: "2px solid black"
+                                    }}
+                                >
+                                    <tr>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderLeft: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NO
+                                        </th>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </th>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderRight: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </th>
+                                    </tr>
+
+                                    {item_list.slice(0, 10).map((element, y, z) => {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list.slice(0, 10)[y].No}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list.slice(0, 10)[y].ItemName}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderBottom: "0px",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {item_list.slice(0, 10)[y].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    })}
+
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* halaman tabel item 18 biji */}
+                        {this.state.result.map((element, idx) => {
+                            return (
+                                <div
+                                    style={{
+                                        border: "2px solid black",
+                                        height: "60vh",
+                                        width: "50vw",
+                                        backgroundColor: "white",
+                                        display: this.state.displayPrint4[idx + 1],
+                                        marginTop: "10px"
+                                    }}
+                                >
+                                    <div>
+                                        <table
+                                            style={{
+                                                width: "50vw",
+                                                borderCollapse: "collapse",
+                                            }}
+                                        >
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        borderTop: "0px",
+                                                        borderLeft: "0px",
+                                                        height: "3.0vh"
+                                                    }}
+                                                >
+                                                    NO
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        height: "3.0vh",
+                                                        borderTop: "0px",
+                                                    }}
+                                                >
+                                                    NAMA BARANG
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        height: "3.0vh",
+                                                        borderTop: "0px",
+                                                    }}
+                                                >
+                                                    QTY PCS
+                                                </th>
+
+
+                                            </tr>
+
+                                            {item_list.slice(this.state.awal[idx], this.state.akhir[idx]).map((element, index, self) => {
+
+                                                return (
+                                                    <tr>
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                height: "2.67vh",
+                                                                //borderBottom: "0px"
+                                                            }}
+                                                        >
+                                                            {item_list.slice(this.state.awal[idx], this.state.akhir[idx])[index]["No"]}
+                                                        </th>
+
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                textAlign: "left",
+                                                                height: "2.67vh",
+                                                                //borderBottom: "0px"
+                                                            }}
+                                                        >
+                                                            {item_list.slice(this.state.awal[idx], this.state.akhir[idx])[index]["ItemName"]}
+                                                        </th>
+
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                borderRight: "0px",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                height: "2.67vh",
+                                                            }}
+                                                        >
+                                                            {item_list.slice(this.state.awal[idx], this.state.akhir[idx])[index]["Qty"]}
+                                                        </th>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </table>
+                                    </div>
+
+                                </div>
+                            )
+                        })}
+
+                        {/* halaman terakhir sisa table item + footer header */}
+                        <div
+                            style={{
+                                border: "2px solid black",
+                                height: "60vh",
+                                width: "50vw",
+                                backgroundColor: "white",
+                                display: this.state.displayPrint4[last],
+                                marginTop: "10px"
+                            }}
+                        >
+                            {/* Table Section */}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: 'center'
+                                }}
+                                className="print-table"
+                            >
+                                <table
+                                    style={{
+                                        width: "750px",
+                                        borderCollapse: "collapse",
+                                    }}
+                                >
+                                    <tr>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderLeft: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NO
+                                        </th>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </th>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderRight: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </th>
+                                    </tr>
+
+                                    {item_list.slice(item_list_len - modulus, item_list_len).map((element, y, z) => {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                        //borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list.slice(item_list_len - modulus, item_list_len)[y].No}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                        //borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list.slice(item_list_len - modulus, item_list_len)[y].ItemName}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        //borderBottom: "0px",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {item_list.slice(item_list_len - modulus, item_list_len)[y].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    })}
+                                </table>
+                            </div>
+
+                            {/* Info2 & Alert 2 Section */}
+                            <div
+                                style={{
+
+                                    marginTop: "-1.25vh",
+                                    //backgroundColor:"yellowgreen"
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        borderBottom: "2px solid black",
+                                        height: "5.5vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            marginLeft: "2px",
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                        }}
+                                    >
+                                        PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
+                                    </p>
+                                    <p
+                                        style={{
+                                            marginLeft: "2px",
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                            marginTop: "-1.25vh"
+                                        }}
+                                    >
+                                        TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
+                                    </p>
+                                </div>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "flex-start",
+                                        height: "4vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                            fontSize: 16,
+                                            marginLeft: "2px"
+                                        }}
+                                    >
+                                        JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        }
+    }
+
+    renderDropDown = () => {
+        const item_list = this.state.print["ItemList"];
+        const item_list_len = this.state.print["ItemList"].length;
+
+        if (item_list_len > 0 && item_list_len <= 6) {
+            return (
+                <div>
+
+                </div>
+            )
+        }
+        if (item_list_len > 6 && item_list_len <= 10) {
+            return (
+                <div>
+                    <DropDownButton
+                        items={this.state.dropDown2}
+                        keyExpr="id"
+                        displayExpr="text"
+                        width={'5vw'}
+                        onItemClick={this.dropDownAction1}
+                    />
+                </div>
+            )
+        }
+        if (item_list_len > 10 && item_list_len < 25) {
+            return (
+                <div>
+                    <DropDownButton
+                        items={this.state.dropDown2}
+                        keyExpr="id"
+                        displayExpr="text"
+                        width={'5vw'}
+                        onItemClick={this.dropDownAction1}
+                    />
+                </div>
+            )
+        }
+        if (item_list_len == 25 || item_list_len == 26 || item_list_len == 27) {
+            return (
+                <div>
+                    <DropDownButton
+                        items={this.state.dropDown3}
+                        keyExpr="id"
+                        displayExpr="text"
+                        width={'5vw'}
+                        onItemClick={this.dropDownAction2}
+                    />
+                </div>
+            )
+        }
+        if (item_list_len >= 28) {
+            return (
+                <div>
+                    <div>
+                        <DropDownButton
+                            items={this.state.dropDown4}
+                            keyExpr="id"
+                            displayExpr="text"
+                            width={'10vw'}
+                            onItemClick={this.dropDownAction3}
+                        />
+                    </div>
+                </div>
+            )
+        }
+
+    }
+
+    dropDownAction1 = (e) => {
+        let id = e.itemData.id;
+        let data = this.state.displayPrint2;
+        let selected = data[id];
+
+        for (var i = 0; i < data.length; i++) {
+            if (i == id) {
+                data[i] = 'block'
+            }
+            if (i != id) {
+                data[i] = 'none'
+            }
+        }
+        this.setState({ displayPrint2: data })
+        console.log(this.state.displayPrint2)
+    }
+
+    dropDownAction2 = (e) => {
+        let id = e.itemData.id;
+        let data = this.state.displayPrint3;
+        let selected = data[id];
+
+        for (var i = 0; i < data.length; i++) {
+            if (i == id) {
+                data[i] = 'block'
+            }
+            if (i != id) {
+                data[i] = 'none'
+            }
+        }
+        this.setState({ displayPrint3: data })
+    }
+
+    dropDownAction3 = (e) => {
+        let id = e.itemData.id;
+        let data = this.state.displayPrint4;
+        let selected = data[id];
+
+        for (var i = 0; i < data.length; i++) {
+            if (i == id) {
+                data[i] = 'block'
+            }
+            if (i != id) {
+                data[i] = 'none'
+            }
+        }
+        this.setState({ displayPrint4: data })
+    }
+
+
+
 
     componentDidMount() {
         this.getValidAndPackage();
@@ -3743,7 +6496,8 @@ class SetPackagingBody extends Component {
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
-                            justifyContent: 'space-between'
+                            justifyContent: 'space-between',
+
                         }}
                     >
                         <div className="Table2-TitleGroup">
@@ -3770,7 +6524,7 @@ class SetPackagingBody extends Component {
                                 disabled={this.state.textBoxStat}
                                 value={this.state.scanItem}
                                 onValueChange={(y) => { this.setState({ scanItem: y }) }}
-                                onEnterKey={this.scanBarcode}
+                                onEnterKey={this.scanItemCode}
                             />
                         </div>
 
@@ -5382,8 +8136,9 @@ class SetPackagingBody extends Component {
                     </Popup>
                 </div>
 
+
                 {/* Popup yang berhubungan dengan print */}
-                {/* Popup Print */}
+                {/* Popup yang di print beneran */}
                 <div>
                     <Popup
                         visible={this.state.isPrint}
@@ -5393,11 +8148,11 @@ class SetPackagingBody extends Component {
                         width={"300px"}
                         height={"300px"}
                     >
-                        <div id="print" style={{ border: "0.1px solid black" }}>
+                        <div id="print2" style={{ border: "1.55px solid black" }}>
                             <p
                                 style={{
-                                    // fontWeight: "700",
-                                    fontSize: "5px",
+                                    fontWeight: "700",
+                                    fontSize: "5.5px",
                                     marginLeft: "2px"
                                 }}
                             >
@@ -5406,8 +8161,8 @@ class SetPackagingBody extends Component {
 
                             <div
                                 style={{
-                                    borderTop: "0.2px solid black",
-                                    borderBottom: "0.2px solid black",
+                                    borderTop: "1.55px solid black",
+                                    borderBottom: "1.55px solid black",
                                     display: "flex",
                                     flexDirection: "row",
                                     justifyContent: "center",
@@ -5611,204 +8366,25 @@ class SetPackagingBody extends Component {
                         </div>
                     </Popup>
                 </div>
-                {/* Popup testing print */}
+                {/* Popup buat display printnya ke user ~ layout 01*/}
                 <div>
                     <Popup
-                        visible={this.state.isPrintDisplay}
+                        visible={false}//this.state.isPrintDisplay
                         closeOnOutsideClick={true}
                         onHiding={this.disablePrintDisplay}
                         showTitle={false}
-                        width={"700px"}
-                        height={"600px"}
+                        width={"54vw"}
                     >
-                        <div
-                            style={{
-                                border: "1px solid black"
-                            }}
-                        >
-                            <div>
-                                <p
-                                    style={{
-                                        fontWeight: "700",
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    {this.state.print.PackageName}
-                                </p>
-                            </div>
+                        {this.renderTable()}
 
-                            <div
-                                style={{
-                                    borderTop: "1px solid black",
-                                    borderBottom: "1px solid black",
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <p
-                                    style={{
-                                        //fontSize: "5px",
-                                        fontWeight: "700"
-                                    }}
-                                >
-                                    JANGAN DITERIMA BILA BUNGKUS / SEAL RUSAK
-                                </p>
-                            </div>
-
-                            <div>
-                                <p
-                                    style={{
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    Customer Name : {this.state.print.CustomerName}
-                                </p>
-                                <p
-                                    style={{
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    Notice : {this.state.print.Notice}
-                                </p>
-
-                                <p
-                                    style={{
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    PickNo : {this.state.print.PickNo}
-                                </p>
-
-                                <p
-                                    style={{
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    Ref / PO No : {this.state.print.PONo}
-                                </p>
-
-                            </div>
-
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: 'center'
-                                }}
-                                className="print-table"
-                            >
-                                <table
-                                    style={{
-                                        width: "680px",
-                                        //marginTop: "8px",
-                                        //marginBottom: "3px",
-                                        border: "1px solid black",
-                                        borderCollapse: "collapse"
-                                    }}
-                                >
-                                    <tr>
-
-                                        <th
-                                            style={{
-                                                fontSize: 12,
-                                                fontWeight: "500",
-                                                border: "1px solid black",
-                                            }}
-                                        >
-                                            No
-                                        </th>
-
-                                        <th
-                                            style={{
-                                                fontSize: 12,
-                                                fontWeight: "500",
-                                                border: "1px solid black",
-                                            }}
-                                        >
-                                            Nama Barang
-                                        </th>
-
-                                        <th
-                                            style={{
-                                                fontSize: 12,
-                                                fontWeight: "500",
-                                                border: "1px solid black",
-                                            }}
-                                        >
-                                            Qty(pcs)
-                                        </th>
-
-                                    </tr>
-
-                                    {this.state.print.ItemList.map((x, y) => {
-                                        return (
-                                            <tr>
-                                                <th style={{ border: "1px solid black", fontSize: 12, fontWeight: "500" }}>
-                                                    {this.state.print.ItemList[y].No}
-                                                </th>
-
-                                                <th style={{ border: "1px solid black", fontSize: 12, fontWeight: "500" }}>
-                                                    {this.state.print.ItemList[y].ItemName}
-                                                </th>
-
-                                                <th style={{ border: "1px solid black", fontSize: 12, fontWeight: "500" }}>
-                                                    {this.state.print.ItemList[y].Qty}
-                                                </th>
-                                            </tr>
-                                        )
-                                    })}
-                                </table>
-                            </div>
-
-                            <div
-                                style={{
-                                    borderBottom: "1px solid black"
-                                }}
-                            >
-                                <p
-                                    style={{
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    Packer: {this.state.print.Packer}
-                                </p>
-                                <p
-                                    style={{
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    Tanggal Packing : {moment(this.state.print.PackingDate).format("D MMMM YYYY")}
-                                </p>
-                            </div>
-
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    //width: "700px",
-                                    //borderBottom: "1px solid black"
-                                }}
-                            >
-                                <p
-                                    style={{
-                                        fontWeight: "700",
-                                        fontSize: 12
-                                    }}
-                                >
-                                    Jangan Dibanting Barang Mudah Pecah!
-                                </p>
-                            </div>
-                        </div>
+                        {this.renderDropDown()}
 
                         <div
                             style={{
                                 display: "flex",
                                 justifyContent: "flex-end",
-                                marginTop: "30px"
+                                marginTop: "20px",
+                                marginRight: "12.5px"
                             }}
                         >
                             <Button
@@ -5822,6 +8398,7 @@ class SetPackagingBody extends Component {
 
                     </Popup>
                 </div >
+
 
                 {/* Popup superuser edit name package */}
                 <div>
