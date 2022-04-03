@@ -129,6 +129,7 @@ class SetPackagingBody extends Component {
             dataGridItem: "",
             //PAGE SIZE array
             allowedPageSizes: [5, 10],
+            allowedPageSizes1: [10, 20],
 
             //button-attributes
             buttonAttributes: {
@@ -177,14 +178,16 @@ class SetPackagingBody extends Component {
             displayPrint3: ['block', 'none', 'none'],
             displayPrint4: [],
 
+            selectedDropDown1: 0,
+
             dropDown2: [
-                { id: 0, text: "Page 1" },
-                { id: 1, text: "Page 2" }
+                { id: 0, text: "Halaman 1" },
+                { id: 1, text: "Halaman 2" }
             ],
             dropDown3: [
-                { id: 0, text: "Page 1" },
-                { id: 1, text: "Page 2" },
-                { id: 2, text: "Page 3" }
+                { id: 0, text: "Halaman 1" },
+                { id: 1, text: "Halaman 2" },
+                { id: 2, text: "Halaman 3" }
             ],
             dropDown4: [],
 
@@ -2409,6 +2412,7 @@ class SetPackagingBody extends Component {
     createDelivery2 = async () => {
         try {
             this.setState({ isLoading: true })
+            const Token = localStorage.getItem("UserToken");
             //siapin bahannya
             //const token = window.localStorage.getItem("UserToken");
             const validParse = JSON.parse(window.localStorage.getItem("ValidList"))
@@ -2423,7 +2427,7 @@ class SetPackagingBody extends Component {
 
             //fetch
             let myHeaders = new Headers();
-            myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBULiBTSU5BUiBBU0lBIEpBWUEiLCJ1c2VyaWQiOiJDT05CLTAwNzctMDAwMCIsImVtYWlsIjoic3VwcGx5Y2hhaW4wMy5vbmRhQGdtYWlsLmNvbSIsImlhdCI6MTY0NTUwNDgzMSwiZXhwIjoxNjQ2NzE0NDMxfQ.RHXT-4jIGT_grtPVCWyXI3AH8d5MAdcT5tjLqcOzb7A");
+            myHeaders.append("Authorization", `Bearer ${Token}`);
             myHeaders.append("Content-Type", "application/json");
 
             var raw = JSON.stringify({
@@ -2638,24 +2642,14 @@ class SetPackagingBody extends Component {
                     ItemList[i].No = parseInt(i) + 1
                 }
 
-                if (ItemList.length < 6) {
-                    let count = 6 - ItemList.length
-
-                    for (let i = 0; i < count; i++) {
-                        ItemList.push({ ItemName: "empty" })
-                    }
-                }
-
-                console.log(ItemList);
-
                 //console.log(data.Packagings.find(isSame))
                 this.state.print["PackageName"] = data.Packagings.find(isSame).PackageName
-                this.state.print["CustomerName"] = "PT. Catur Mitra Sejati Sentosa" //masih null
-                this.state.print["Notice"] = "Kirim K M10 Teluk Jambe EXPO PO 04 MEI 2022 (22/03/2022). JANGAN LUPA INI PACKERNYA SALMAN" //masih null
-                this.state.print["PickNo"] = "35754" //untuk pickno ini ambil properties yang mana ya?
-                this.state.print["PONo"] = "220007503" //ini ambil dari PONo dari properties apa ya?
-                this.state.print["Packer"] = "Salman" //ini ambil dari properties username ya?
-                this.state.print["PackingDate"] = moment(data.Packagings.find(isSame).PackingDate).format("YYYY/MM/D")
+                this.state.print["CustomerName"] = data.CustomerName == null ? "(Data belum tersedia)" : data.CustomerName
+                this.state.print["Notice"] = data.Notice == null ? "(Data belum tersedia)" : data.Notice
+                this.state.print["PickNo"] = data.PickNo == null ? "(DATA BELUM TERSEDIA)" : data.PickNo
+                this.state.print["PONo"] = data.PONo == null ? "(DATA BELUM TERSEDIA)" : data.PONo
+                this.state.print["Packer"] = localStorage.getItem('Username')
+                this.state.print["PackingDate"] = moment(data.Packagings.find(isSame).PackingDate).format("DD/MM/YYYY")
                 this.state.print["ItemList"] = ItemList
 
 
@@ -2693,7 +2687,7 @@ class SetPackagingBody extends Component {
                         for (var i = 0; i < total_page; i++) {
                             dropDown.push({
                                 id: i,
-                                text: `Page ${i + 1}`
+                                text: `Halaman ${i + 1}`
                             })
                         }
 
@@ -2754,7 +2748,7 @@ class SetPackagingBody extends Component {
                         for (var i = 0; i < total_page; i++) {
                             dropDown.push({
                                 id: i,
-                                text: `Page ${i + 1}`
+                                text: `Halaman ${i + 1}`
                             })
                         }
 
@@ -3364,7 +3358,7 @@ class SetPackagingBody extends Component {
                         bottom: "10px",
                         marginRight: "10px",
                         color: "green",
-                        fontWeight: "400",
+                        fontWeight: "500",
                     }}
                 >
                     {data.value}
@@ -3378,6 +3372,7 @@ class SetPackagingBody extends Component {
     //function buat dapetin data validasi dan data package
     getValid = async (cb) => {
         try {
+            this.setState({ isLoading: true })
             //fetch process begin!
             const Token = localStorage.getItem("UserToken");
 
@@ -3403,7 +3398,6 @@ class SetPackagingBody extends Component {
         catch (err) {
             console.log(err)
             this.setState({
-                isLoading: false,
                 tryCatchErrMsg: err,
                 isTryCatchErr: true
             })
@@ -3648,11 +3642,18 @@ class SetPackagingBody extends Component {
         })
     }
 
-    renderTable = () => {
-        const item_list = this.state.print["ItemList"]
-        const item_list_len = this.state.print["ItemList"].length
 
-        if (item_list_len > 0 && item_list_len <= 6) {
+    renderTable = () => {
+        let item_list = this.state.print["ItemList"]
+        let item_list_len = this.state.print["ItemList"].length
+
+        if (item_list_len > 0 && item_list_len < 7) {
+            if (item_list_len < 6) {
+
+                for (var i = 0; i < (6 - item_list_len); i++) {
+                    item_list.push({ ItemName: "empty" })
+                }
+            }
             return (
                 <div>
                     <div
@@ -3660,7 +3661,8 @@ class SetPackagingBody extends Component {
                             border: "2px solid black",
                             height: "60vh",
                             width: "50vw",
-                            display: this.state.displayPrint1[0]
+                            display: this.state.displayPrint1[0],
+                            backgroundColor: "white"
                         }}
                     >
                         {/* Package Name Section */}
@@ -3738,6 +3740,7 @@ class SetPackagingBody extends Component {
                                     <p
                                         style={{
                                             fontWeight: "800",
+                                            fontSize: 15,
                                         }}
                                     >
                                         {this.state.print["Notice"].toUpperCase()}
@@ -3872,7 +3875,7 @@ class SetPackagingBody extends Component {
                                             </tr>
                                         )
                                     }
-                                    else {
+                                    if (element.ItemName != "empty") {
                                         return (
                                             <tr>
                                                 <th
@@ -3920,14 +3923,13 @@ class SetPackagingBody extends Component {
                         <div
                             style={{
 
-                                marginTop: "-1.25vh",
-                                //backgroundColor:"yellowgreen"
+                                marginTop: "-1.25vhh"
                             }}
                         >
                             <div
                                 style={{
-                                    borderBottom: "2px solid black",
-                                    height: "5.5vh"
+                                    height: "5.5vh",
+                                    borderTop: "0.5px solid black"
                                 }}
                             >
                                 <p
@@ -3935,6 +3937,7 @@ class SetPackagingBody extends Component {
                                         marginLeft: "2px",
                                         fontWeight: "800",
                                         fontSize: 15,
+                                        marginTop: "0.5vh"
                                     }}
                                 >
                                     PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
@@ -3944,7 +3947,7 @@ class SetPackagingBody extends Component {
                                         marginLeft: "2px",
                                         fontWeight: "800",
                                         fontSize: 15,
-                                        marginTop: "-1.25vh"
+                                        marginTop: "-1.5vh"
                                     }}
                                 >
                                     TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
@@ -3960,7 +3963,9 @@ class SetPackagingBody extends Component {
                                     display: "flex",
                                     flexDirection: "row",
                                     justifyContent: "flex-start",
-                                    height: "4vh"
+                                    height: "4vh",
+                                    borderTop: "2px solid black",
+                                    marginTop: "2px"
                                 }}
                             >
                                 <p
@@ -3978,7 +3983,14 @@ class SetPackagingBody extends Component {
                 </div>
             )
         }
-        if (item_list_len > 6 && item_list_len <= 10) {
+        if (item_list_len > 6 && item_list_len < 11) {
+
+            if (item_list_len < 10) {
+
+                for (var i = 0; i < (10 - item_list_len); i++) {
+                    item_list.push({ ItemName: "empty" })
+                }
+            }
 
             return (
                 <div>
@@ -3989,7 +4001,8 @@ class SetPackagingBody extends Component {
                             height: "55.5vh",
                             width: "50vw",
                             backgroundColor: "white",
-                            display: this.state.displayPrint2[0]
+                            display: this.state.displayPrint2[0],
+                            marginBottom: "10px",
                         }}
                     >
                         {/* Package Name Section */}
@@ -4002,7 +4015,7 @@ class SetPackagingBody extends Component {
                                     marginTop: "0.5vh"
                                 }}
                             >
-                                Package No. A
+                                {this.state.print['PackageName'].toUpperCase()}
                             </p>
                         </div>
 
@@ -4042,7 +4055,7 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["CustomerName"].toUpperCase()}
                             </p>
 
                             <div
@@ -4067,9 +4080,10 @@ class SetPackagingBody extends Component {
                                     <p
                                         style={{
                                             fontWeight: "800",
+                                            fontSize: 15,
                                         }}
                                     >
-                                        LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                        {this.state.print["Notice"].toUpperCase()}
                                     </p>
                                 </div>
                             </div>
@@ -4082,7 +4096,7 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PickNo"]}
                             </p>
                             <p
                                 style={{
@@ -4092,7 +4106,7 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PONo"]}
                             </p>
 
                         </div>
@@ -4201,7 +4215,7 @@ class SetPackagingBody extends Component {
                                             </tr>
                                         )
                                     }
-                                    else {
+                                    if (element.ItemName != "empty") {
                                         return (
                                             <tr>
                                                 <th
@@ -4210,7 +4224,7 @@ class SetPackagingBody extends Component {
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         height: "2.82vh",
-                                                        borderBottom: "0px"
+                                                        //borderBottom: "0px"
                                                     }}
                                                 >
                                                     {item_list[y].No}
@@ -4223,7 +4237,7 @@ class SetPackagingBody extends Component {
                                                         fontWeight: "800",
                                                         textAlign: "left",
                                                         height: "2.82vh",
-                                                        borderBottom: "0px"
+                                                        //borderBottom: "0px"
                                                     }}
                                                 >
                                                     {item_list[y].ItemName}
@@ -4235,7 +4249,7 @@ class SetPackagingBody extends Component {
                                                         borderRight: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        borderBottom: "0px",
+                                                        //borderBottom: "0px",
                                                         height: "2.82vh",
                                                     }}
                                                 >
@@ -4250,13 +4264,13 @@ class SetPackagingBody extends Component {
                         </div>
                     </div>
 
+                    {/* Halaman Kedua (footer packer aja) */}
                     <div
                         style={{
-                            border: "2px solid black",
-                            height: "60vh",
+                            border: "2px solid white",
+                            height: "55.5vh",
                             width: "50vw",
                             backgroundColor: "white",
-                            marginTop: "10px",
                             marginBottom: "10px",
                             display: this.state.displayPrint2[1]
                         }}
@@ -4265,8 +4279,7 @@ class SetPackagingBody extends Component {
                         <div
                             style={{
 
-                                marginTop: "-1.25vh",
-                                //backgroundColor:"yellowgreen"
+                                marginTop: "-1.25vh"
                             }}
                         >
                             <div
@@ -4282,7 +4295,7 @@ class SetPackagingBody extends Component {
                                         fontSize: 15,
                                     }}
                                 >
-                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
                                 </p>
                                 <p
                                     style={{
@@ -4292,7 +4305,7 @@ class SetPackagingBody extends Component {
                                         marginTop: "-1.25vh"
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
                                 </p>
                             </div>
 
@@ -4329,13 +4342,20 @@ class SetPackagingBody extends Component {
             let itemList1 = item_list.slice(0, 10)
             let itemList2 = item_list.slice(10, item_list_len)
 
+            if (item_list_len < 24) {
+                for (var i = 0; i < (24 - item_list_len); i++) {
+                    item_list.push({ ItemName: "empty" })
+                }
+            }
+
             return (
                 <div>
                     {/* halaman 1 (header + tabel 10 jenis item) */}
                     <div
                         style={{
                             border: "2px solid black",
-                            height: "60vh",
+                            borderBottom: "0px",
+                            height: "55.3vh",
                             width: "50vw",
                             backgroundColor: "white",
                             display: this.state.displayPrint2[0]
@@ -4351,7 +4371,7 @@ class SetPackagingBody extends Component {
                                     marginTop: "0.5vh"
                                 }}
                             >
-                                Package No. A
+                                {this.state.print['PackageName'].toUpperCase()}
                             </p>
                         </div>
 
@@ -4391,7 +4411,7 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["CustomerName"].toUpperCase()}
                             </p>
 
                             <div
@@ -4416,9 +4436,10 @@ class SetPackagingBody extends Component {
                                     <p
                                         style={{
                                             fontWeight: "800",
+                                            fontSize: 15,
                                         }}
                                     >
-                                        LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                        {this.state.print["Notice"].toUpperCase()}
                                     </p>
                                 </div>
                             </div>
@@ -4431,7 +4452,7 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PickNo"]}
                             </p>
                             <p
                                 style={{
@@ -4441,9 +4462,8 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PONo"]}
                             </p>
-
                         </div>
 
                         {/* Table Section */}
@@ -4559,7 +4579,7 @@ class SetPackagingBody extends Component {
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         height: "2.82vh",
-                                                        borderBottom: "0px"
+
                                                     }}
                                                 >
                                                     {itemList1[y].No}
@@ -4572,7 +4592,7 @@ class SetPackagingBody extends Component {
                                                         fontWeight: "800",
                                                         textAlign: "left",
                                                         height: "2.82vh",
-                                                        borderBottom: "0px"
+
                                                     }}
                                                 >
                                                     {itemList1[y].ItemName}
@@ -4584,7 +4604,7 @@ class SetPackagingBody extends Component {
                                                         borderRight: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        borderBottom: "0px",
+
                                                         height: "2.82vh",
                                                     }}
                                                 >
@@ -4602,12 +4622,10 @@ class SetPackagingBody extends Component {
                     {/* halaman 2 tabel item sisanya + footer packer */}
                     <div
                         style={{
-                            border: "2px solid black",
-                            height: "60vh",
+                            height: "55.5vh",
                             width: "50vw",
                             backgroundColor: "white",
                             display: this.state.displayPrint2[1],
-                            marginTop: "10px"
                         }}
                     >
                         {/* Table Section */}
@@ -4616,6 +4634,7 @@ class SetPackagingBody extends Component {
                                 style={{
                                     width: "50vw",
                                     borderCollapse: "collapse",
+                                    border: "2px solid black",
                                 }}
                             >
                                 <tr>
@@ -4658,44 +4677,92 @@ class SetPackagingBody extends Component {
                                     </th>
                                 </tr>
                                 {itemList2.map((element, y, z) => {
-                                    return (
-                                        <tr>
-                                            <th
-                                                style={{
-                                                    border: "2px solid black",
-                                                    fontSize: 14,
-                                                    fontWeight: "800",
-                                                    height: "2.7vh",
-                                                    //borderBottom: "0px"
-                                                }}
+                                    if (element.ItemName != "empty") {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.7vh",
+                                                        //borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {itemList2[y].No}
+                                                </th>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                        //borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {itemList2[y].ItemName}
+                                                </th>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {itemList2[y].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
+                                    if (element.ItemName == "empty") {
+                                        return (
+                                            <tr
                                             >
-                                                {itemList2[y].No}
-                                            </th>
-                                            <th
-                                                style={{
-                                                    border: "2px solid black",
-                                                    fontSize: 14,
-                                                    fontWeight: "800",
-                                                    textAlign: "left",
-                                                    height: "2.82vh",
-                                                    //borderBottom: "0px"
-                                                }}
-                                            >
-                                                {itemList2[y].ItemName}
-                                            </th>
-                                            <th
-                                                style={{
-                                                    border: "2px solid black",
-                                                    borderRight: "0px",
-                                                    fontSize: 14,
-                                                    fontWeight: "800",
-                                                    height: "2.82vh",
-                                                }}
-                                            >
-                                                {itemList2[y].Qty}
-                                            </th>
-                                        </tr>
-                                    )
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.7vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.7vh",
+                                                        borderBottom: "0px",
+                                                        borderTop: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        borderTop: "0px",
+                                                        borderBottom: "0px"
+                                                    }}
+                                                >
+
+                                                </th>
+                                            </tr>
+                                        )
+                                    }
                                 })}
                             </table>
                         </div>
@@ -4703,39 +4770,45 @@ class SetPackagingBody extends Component {
                         {/* Info2 & Alert 2 Section */}
                         <div
                             style={{
-
-                                marginTop: "-1.25vh",
-                                //backgroundColor:"yellowgreen"
+                                border: "2px solid black",
+                                borderTop: "0px",
+                                marginTop: "-15px"
                             }}
                         >
-                            <div
+                            <p
                                 style={{
-                                    borderBottom: "2px solid black",
-                                    height: "5.5vh"
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    fontSize: 15,
                                 }}
                             >
-                                <p
-                                    style={{
-                                        marginLeft: "2px",
-                                        fontWeight: "800",
-                                        fontSize: 15,
-                                    }}
-                                >
-                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
-                                </p>
-                                <p
-                                    style={{
-                                        marginLeft: "2px",
-                                        fontWeight: "800",
-                                        fontSize: 15,
-                                        marginTop: "-1.25vh"
-                                    }}
-                                >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
-                                </p>
-                            </div>
+                                PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
+                            </p>
 
-                            <div
+                            <p
+                                style={{
+                                    marginLeft: "2px",
+                                    fontWeight: "800",
+                                    fontSize: 15,
+                                    marginTop: "-10px"
+                                }}
+                            >
+                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
+                            </p>
+
+                            <p
+                                style={{
+                                    borderTop: "2px solid black",
+                                    marginTop: "-5px",
+                                    fontWeight: "800",
+                                    fontSize: 15,
+                                }}
+                            >
+                                JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                            </p>
+                        </div>
+
+                        {/* <div
                                 style={{
                                     display: "flex",
                                     flexDirection: "row",
@@ -4744,7 +4817,9 @@ class SetPackagingBody extends Component {
                                     display: "flex",
                                     flexDirection: "row",
                                     justifyContent: "flex-start",
-                                    height: "4vh"
+                                    height: "4vh",
+                                    marginTop: "30px",
+                                    borderTop: "2px solid black"
                                 }}
                             >
                                 <p
@@ -4756,14 +4831,12 @@ class SetPackagingBody extends Component {
                                 >
                                     JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
                                 </p>
-                            </div>
-                        </div>
-
+                            </div> */}
                     </div>
-                </div>
+                </div >
             )
         }
-        if (item_list_len == 25 || item_list_len == 26 || item_list_len == 27) {
+        if (item_list_len > 24 && item_list_len < 28) {
             let itemList1 = item_list.slice(0, 10)
             let itemList2 = item_list.slice(10, item_list_len)
 
@@ -4773,7 +4846,8 @@ class SetPackagingBody extends Component {
                     <div
                         style={{
                             border: "2px solid black",
-                            height: "60vh",
+                            borderBottom: "0px",
+                            height: "54.8vh",
                             width: "50vw",
                             backgroundColor: "white",
                             display: this.state.displayPrint3[0]
@@ -4789,7 +4863,7 @@ class SetPackagingBody extends Component {
                                     marginTop: "0.5vh"
                                 }}
                             >
-                                Package No. A
+                                {this.state.print['PackageName'].toUpperCase()}
                             </p>
                         </div>
 
@@ -4829,14 +4903,13 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["CustomerName"].toUpperCase()}
                             </p>
 
                             <div
                                 style={{
                                     display: "flex",
                                     flexDirection: "row",
-                                    // backgroundColor:"green",
                                     marginTop: "-2.7vh",
                                     marginLeft: "2px",
                                     height: "7.3vh"
@@ -4854,9 +4927,10 @@ class SetPackagingBody extends Component {
                                     <p
                                         style={{
                                             fontWeight: "800",
+                                            fontSize: 15,
                                         }}
                                     >
-                                        LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                        {this.state.print["Notice"].toUpperCase()}
                                     </p>
                                 </div>
                             </div>
@@ -4869,7 +4943,7 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PickNo"]}
                             </p>
                             <p
                                 style={{
@@ -4879,7 +4953,7 @@ class SetPackagingBody extends Component {
                                     fontSize: 15,
                                 }}
                             >
-                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PONo"]}
                             </p>
 
                         </div>
@@ -4951,9 +5025,8 @@ class SetPackagingBody extends Component {
                                                         border: "2px solid black",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        height: "2.7vh",
                                                         borderBottom: "0px",
-                                                        borderTop: "0px"
+                                                        height: "2.7vh"
                                                     }}
                                                 >
 
@@ -4965,9 +5038,8 @@ class SetPackagingBody extends Component {
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         textAlign: "left",
-                                                        height: "2.7vh",
                                                         borderBottom: "0px",
-                                                        borderTop: "0px"
+                                                        height: "2.7vh"
                                                     }}
                                                 >
 
@@ -4979,8 +5051,8 @@ class SetPackagingBody extends Component {
                                                         borderRight: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        borderTop: "0px",
-                                                        borderBottom: "0px"
+                                                        borderBottom: "0px",
+                                                        height: "2.7vh"
                                                     }}
                                                 >
 
@@ -4996,8 +5068,7 @@ class SetPackagingBody extends Component {
                                                         border: "2px solid black",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        height: "2.82vh",
-                                                        borderBottom: "0px"
+                                                        height: "2.7vh"
                                                     }}
                                                 >
                                                     {itemList1[y].No}
@@ -5009,8 +5080,7 @@ class SetPackagingBody extends Component {
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         textAlign: "left",
-                                                        height: "2.82vh",
-                                                        borderBottom: "0px"
+                                                        height: "2.7vh"
                                                     }}
                                                 >
                                                     {itemList1[y].ItemName}
@@ -5022,8 +5092,7 @@ class SetPackagingBody extends Component {
                                                         borderRight: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        borderBottom: "0px",
-                                                        height: "2.82vh",
+                                                        height: "2.7vh"
                                                     }}
                                                 >
                                                     {itemList1[y].Qty}
@@ -5041,17 +5110,16 @@ class SetPackagingBody extends Component {
                     <div
                         style={{
                             border: "2px solid black",
-                            height: "60vh",
+                            height: "54.8vh",
                             width: "50vw",
                             backgroundColor: "white",
                             display: this.state.displayPrint3[1],
-                            marginTop: "10px"
                         }}
                     >
                         <div>
                             <table
                                 style={{
-                                    width: "50vw",
+                                    width: "49.8vw",
                                     borderCollapse: "collapse",
                                 }}
                             >
@@ -5143,20 +5211,18 @@ class SetPackagingBody extends Component {
                     {/* halaman 3 (footer packer) */}
                     <div
                         style={{
-                            border: "2px solid black",
-                            height: "60vh",
+                            border: "2px solid white",
+                            height: "54.8vh",
                             width: "50vw",
                             backgroundColor: "white",
                             display: this.state.displayPrint3[2],
-                            marginTop: '10px'
                         }}
                     >
                         {/* Info2 & Alert 2 Section */}
                         <div
                             style={{
-
                                 marginTop: "-1.25vh",
-                                //backgroundColor:"yellowgreen"
+                                border: "2px solid black"
                             }}
                         >
                             <div
@@ -5172,7 +5238,7 @@ class SetPackagingBody extends Component {
                                         fontSize: 15,
                                     }}
                                 >
-                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
                                 </p>
                                 <p
                                     style={{
@@ -5182,7 +5248,7 @@ class SetPackagingBody extends Component {
                                         marginTop: "-1.25vh"
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
                                 </p>
                             </div>
 
@@ -5210,7 +5276,7 @@ class SetPackagingBody extends Component {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div >
             )
         }
         if (item_list_len >= 28) {
@@ -5225,7 +5291,7 @@ class SetPackagingBody extends Component {
                         <div
                             style={{
                                 border: "2px solid black",
-                                height: "60vh",
+                                height: "55.2vh",
                                 width: "50vw",
                                 backgroundColor: "white",
                                 display: this.state.displayPrint4[0]
@@ -5241,7 +5307,7 @@ class SetPackagingBody extends Component {
                                         marginTop: "0.5vh"
                                     }}
                                 >
-                                    Package No. A
+                                    {this.state.print['PackageName'].toUpperCase()}
                                 </p>
                             </div>
 
@@ -5281,14 +5347,13 @@ class SetPackagingBody extends Component {
                                         fontSize: 15,
                                     }}
                                 >
-                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["CustomerName"].toUpperCase()}
                                 </p>
 
                                 <div
                                     style={{
                                         display: "flex",
                                         flexDirection: "row",
-                                        // backgroundColor:"green",
                                         marginTop: "-2.7vh",
                                         marginLeft: "2px",
                                         height: "7.3vh"
@@ -5306,9 +5371,10 @@ class SetPackagingBody extends Component {
                                         <p
                                             style={{
                                                 fontWeight: "800",
+                                                fontSize: 15,
                                             }}
                                         >
-                                            LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                            {this.state.print["Notice"].toUpperCase()}
                                         </p>
                                     </div>
                                 </div>
@@ -5321,7 +5387,7 @@ class SetPackagingBody extends Component {
                                         fontSize: 15,
                                     }}
                                 >
-                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PickNo"]}
                                 </p>
                                 <p
                                     style={{
@@ -5331,7 +5397,7 @@ class SetPackagingBody extends Component {
                                         fontSize: 15,
                                     }}
                                 >
-                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PONo"]}
                                 </p>
 
                             </div>
@@ -5441,19 +5507,19 @@ class SetPackagingBody extends Component {
                             return (
                                 <div
                                     style={{
-                                        border: "2px solid black",
-                                        height: "60vh",
+                                        border: "2px solid white",
+                                        height: "57vh",
                                         width: "50vw",
                                         backgroundColor: "white",
                                         display: this.state.displayPrint4[idx + 1],
-                                        marginTop: "10px"
                                     }}
                                 >
                                     <div>
                                         <table
                                             style={{
-                                                width: "50vw",
+                                                width: "49.8vw",
                                                 borderCollapse: "collapse",
+                                                border: "2px solid black"
                                             }}
                                         >
                                             <tr>
@@ -5551,64 +5617,69 @@ class SetPackagingBody extends Component {
                         {/* halaman terakhir (footer packer) */}
                         <div
                             style={{
-                                border: "2px solid black",
-                                height: "60vh",
+                                border: "2px solid white",
+                                height: "54.8vh",
                                 width: "50vw",
                                 backgroundColor: "white",
-                                marginTop: "10px",
-                                marginBottom: "10px",
                                 display: this.state.displayPrint4[last]
                             }}
                         >
+                            {/* Info2 & Alert 2 Section */}
                             <div
                                 style={{
-                                    borderBottom: "2px solid black",
-                                    height: "5.5vh"
+                                    marginTop: "-1.25vh",
+                                    border: "2px solid black"
                                 }}
                             >
-                                <p
+                                <div
                                     style={{
-                                        marginLeft: "2px",
-                                        fontWeight: "800",
-                                        fontSize: 15,
+                                        borderBottom: "2px solid black",
+                                        height: "5.5vh"
                                     }}
                                 >
-                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
-                                </p>
+                                    <p
+                                        style={{
+                                            marginLeft: "2px",
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                        }}
+                                    >
+                                        PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
+                                    </p>
+                                    <p
+                                        style={{
+                                            marginLeft: "2px",
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                            marginTop: "-1.25vh"
+                                        }}
+                                    >
+                                        TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
+                                    </p>
+                                </div>
 
-                                <p
+                                <div
                                     style={{
-                                        marginLeft: "2px",
-                                        fontWeight: "800",
-                                        fontSize: 15,
-                                        marginTop: "-1.25vh"
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "flex-start",
+                                        height: "4vh"
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
-                                </p>
-                            </div>
-
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "flex-start",
-                                    height: "4vh"
-                                }}
-                            >
-                                <p
-                                    style={{
-                                        fontWeight: "800",
-                                        fontSize: 16,
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
-                                </p>
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                            fontSize: 16,
+                                            marginLeft: "2px"
+                                        }}
+                                    >
+                                        JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -5622,7 +5693,7 @@ class SetPackagingBody extends Component {
                         <div
                             style={{
                                 border: "2px solid black",
-                                height: "60vh",
+                                height: "55.2vh",
                                 width: "50vw",
                                 backgroundColor: "white",
                                 display: this.state.displayPrint4[0]
@@ -5638,7 +5709,7 @@ class SetPackagingBody extends Component {
                                         marginTop: "0.5vh"
                                     }}
                                 >
-                                    Package No. A
+                                    {this.state.print['PackageName'].toUpperCase()}
                                 </p>
                             </div>
 
@@ -5678,7 +5749,7 @@ class SetPackagingBody extends Component {
                                         fontSize: 15,
                                     }}
                                 >
-                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;KO SAM
+                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["CustomerName"].toUpperCase()}
                                 </p>
 
                                 <div
@@ -5703,9 +5774,10 @@ class SetPackagingBody extends Component {
                                         <p
                                             style={{
                                                 fontWeight: "800",
+                                                fontSize: 15,
                                             }}
                                         >
-                                            LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET LOREM IPSUM DOLOR SIT AMET
+                                            {this.state.print["Notice"].toUpperCase()}
                                         </p>
                                     </div>
                                 </div>
@@ -5718,7 +5790,7 @@ class SetPackagingBody extends Component {
                                         fontSize: 15,
                                     }}
                                 >
-                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PickNo"]}
                                 </p>
                                 <p
                                     style={{
@@ -5728,7 +5800,7 @@ class SetPackagingBody extends Component {
                                         fontSize: 15,
                                     }}
                                 >
-                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{12345678}
+                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PONo"]}
                                 </p>
 
                             </div>
@@ -5746,7 +5818,6 @@ class SetPackagingBody extends Component {
                                     style={{
                                         width: "750px",
                                         borderCollapse: "collapse",
-                                        //borderBottom: "2px solid black"
                                     }}
                                 >
                                     <tr>
@@ -5818,8 +5889,8 @@ class SetPackagingBody extends Component {
                                                         borderRight: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        borderBottom: "0px",
                                                         height: "2.82vh",
+                                                        borderBottom: "0px"
                                                     }}
                                                 >
                                                     {item_list.slice(0, 10)[y].Qty}
@@ -5837,19 +5908,19 @@ class SetPackagingBody extends Component {
                             return (
                                 <div
                                     style={{
-                                        border: "2px solid black",
-                                        height: "60vh",
+                                        border: "2px solid white",
+                                        height: "57vh",
                                         width: "50vw",
                                         backgroundColor: "white",
                                         display: this.state.displayPrint4[idx + 1],
-                                        marginTop: "10px"
                                     }}
                                 >
                                     <div>
                                         <table
                                             style={{
-                                                width: "50vw",
+                                                width: "49.8vw",
                                                 borderCollapse: "collapse",
+                                                border: "2px solid black"
                                             }}
                                         >
                                             <tr>
@@ -5947,12 +6018,11 @@ class SetPackagingBody extends Component {
                         {/* halaman terakhir sisa table item + footer header */}
                         <div
                             style={{
-                                border: "2px solid black",
-                                height: "60vh",
+                                border: "2px solid white",
+                                height: "57vh",
                                 width: "50vw",
                                 backgroundColor: "white",
                                 display: this.state.displayPrint4[last],
-                                marginTop: "10px"
                             }}
                         >
                             {/* Table Section */}
@@ -5976,7 +6046,6 @@ class SetPackagingBody extends Component {
                                                 fontSize: 14,
                                                 fontWeight: "800",
                                                 border: "2px solid black",
-                                                borderLeft: "0px",
                                                 height: "3.0vh"
                                             }}
                                         >
@@ -5997,7 +6066,6 @@ class SetPackagingBody extends Component {
                                                 fontSize: 14,
                                                 fontWeight: "800",
                                                 border: "2px solid black",
-                                                borderRight: "0px",
                                                 height: "3.0vh"
                                             }}
                                         >
@@ -6036,7 +6104,6 @@ class SetPackagingBody extends Component {
                                                 <th
                                                     style={{
                                                         border: "2px solid black",
-                                                        borderRight: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         //borderBottom: "0px",
@@ -6054,9 +6121,9 @@ class SetPackagingBody extends Component {
                             {/* Info2 & Alert 2 Section */}
                             <div
                                 style={{
-
-                                    marginTop: "-1.25vh",
-                                    //backgroundColor:"yellowgreen"
+                                    border: "2px solid black",
+                                    borderTop: "0px",
+                                    marginTop: "-16px"
                                 }}
                             >
                                 <div
@@ -6072,7 +6139,7 @@ class SetPackagingBody extends Component {
                                             fontSize: 15,
                                         }}
                                     >
-                                        PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SALMAN
+                                        PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
                                     </p>
                                     <p
                                         style={{
@@ -6082,7 +6149,7 @@ class SetPackagingBody extends Component {
                                             marginTop: "-1.25vh"
                                         }}
                                     >
-                                        TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 01/01/2001
+                                        TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
                                     </p>
                                 </div>
 
@@ -6109,6 +6176,7 @@ class SetPackagingBody extends Component {
                                     </p>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 )
@@ -6134,8 +6202,10 @@ class SetPackagingBody extends Component {
                         items={this.state.dropDown2}
                         keyExpr="id"
                         displayExpr="text"
-                        width={'5vw'}
+                        width={'8vw'}
                         onItemClick={this.dropDownAction1}
+                        useSelectMode={true}
+                        selectedItemKey={this.state.selectedDropDown1}
                     />
                 </div>
             )
@@ -6147,21 +6217,25 @@ class SetPackagingBody extends Component {
                         items={this.state.dropDown2}
                         keyExpr="id"
                         displayExpr="text"
-                        width={'5vw'}
+                        width={'8vw'}
                         onItemClick={this.dropDownAction1}
+                        useSelectMode={true}
+                        selectedItemKey={this.state.selectedDropDown1}
                     />
                 </div>
             )
         }
-        if (item_list_len == 25 || item_list_len == 26 || item_list_len == 27) {
+        if (item_list_len > 24 && item_list_len < 28) {
             return (
                 <div>
                     <DropDownButton
                         items={this.state.dropDown3}
                         keyExpr="id"
                         displayExpr="text"
-                        width={'5vw'}
+                        width={'8vw'}
                         onItemClick={this.dropDownAction2}
+                        useSelectMode={true}
+                        selectedItemKey={this.state.selectedDropDown1}
                     />
                 </div>
             )
@@ -6174,8 +6248,10 @@ class SetPackagingBody extends Component {
                             items={this.state.dropDown4}
                             keyExpr="id"
                             displayExpr="text"
-                            width={'10vw'}
+                            width={'8vw'}
                             onItemClick={this.dropDownAction3}
+                            useSelectMode={true}
+                            selectedItemKey={this.state.selectedDropDown1}
                         />
                     </div>
                 </div>
@@ -6183,6 +6259,1351 @@ class SetPackagingBody extends Component {
         }
 
     }
+
+    renderTable2 = () => {
+        const item_list = this.state.print["ItemList"];
+        const item_list_len = this.state.print["ItemList"].length;
+
+        // <div
+        //             id="print2"
+        //         >
+        //             <div
+        //                 style={{
+        //                     border: "0.5px solid black",
+        //                     height: "159px",
+        //                     width: "245px",
+        //                     marginTop: "5px",
+        //                     marginLeft: '10px' //'2.25px' 
+        //                 }}
+        //             >
+        //                 <p>testing123</p>
+        //             </div>
+        //         </div>
+
+        if (item_list_len > 0 && item_list_len < 6) {
+
+            // if (item_list_len < 5) {
+
+            //     for (var i = 0; i < (5 - item_list_len); i++) {
+            //         item_list.push({ ItemName: "empty" })
+            //     }
+            // }
+
+            return (
+                <div
+                    id="print2"
+                    style={{
+                        border: "0.5px solid black",
+                        height: "159px",
+                        width: "245px",
+                        marginTop: "5px",
+                        marginLeft: "10px"
+                    }}
+                >
+                    {/* Package Name Section */}
+                    <div
+                    >
+                        <p
+                            style={{
+                                fontWeight: "800",
+                                marginLeft: "2px",
+                                fontSize: "7px",
+                                marginTop: '-1.0px'
+                            }}
+                        >
+                            {this.state.print['PackageName'].toUpperCase()}
+                        </p>
+                    </div>
+
+                    {/* Alert 1 Section */}
+                    <div
+                        style={{
+                            borderBottom: "0.5px solid black",
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginTop: "-15.5px",
+                        }}
+                    >
+                        <p
+                            style={{
+                                fontSize: "7px",
+                                fontWeight: "800",
+                                marginBottom: '1px'
+                            }}
+                        >
+                            JANGAN DITERIMA BILA BUNGKUS / SEAL RUSAK
+                        </p>
+                    </div>
+
+                    {/* Header Info Section */}
+                    <div
+                        style={{
+                            height: "40px",
+                            marginLeft: "2px",
+                            marginBottom: "2px",
+                            marginTop: "-3.5px",
+                        }}
+                    >
+                        <p
+                            style={{
+                                fontSize: "7px",
+                                fontWeight: "900",
+                                marginTop: "2px"
+                            }}
+                        >
+                            CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
+                        </p>
+                        <div>
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "800",
+                                    marginTop: "-7.5px"
+                                }}
+                            >
+                                NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                            </p>
+                        </div>
+
+                        <p
+                            style={{
+                                fontSize: "7px",
+                                fontWeight: "800",
+                                marginTop: "-7.5px"
+                            }}
+                        >
+                            PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PickNo}
+                        </p>
+
+                        <p
+                            style={{
+                                fontSize: "7px",
+                                fontWeight: "800",
+                                marginTop: "-7.5px"
+                            }}
+                        >
+                            REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PONo}
+                        </p>
+                    </div>
+
+                    {/* Table Item Section */}
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: 'center',
+                            width: "247.15px",
+                            marginLeft: "-1px",
+                            marginTop: "-6px",
+                            marginBottom: "3px"
+                        }}
+                        className="print-table"
+                    >
+                        <table
+                            style={{
+                                borderCollapse: "collapse",
+                                marginTop: "10px",
+                                width: "200%",
+                                borderBottom: "0.5px solid black"
+                            }}
+                        >
+                            {/* Header Table */}
+                            <tr>
+                                <th
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "800",
+                                        border: "0.5px solid black",
+                                        borderCollapse: "collapse",
+                                    }}
+                                >
+                                    NO
+                                </th>
+
+                                <th
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "800",
+                                        border: "0.5px solid black",
+                                        borderCollapse: "collapse",
+                                    }}
+                                >
+                                    NAMA BARANG
+                                </th>
+
+                                <th
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "800",
+                                        border: "0.5px solid black",
+                                        borderCollapse: "collapse",
+                                    }}
+                                >
+                                    QTY PCS
+                                </th>
+
+                            </tr>
+
+
+                            {/* Body Table */}
+                            {this.state.print["ItemList"].slice(0, 10).map((element, y) => {
+                                if (element.ItemName != "empty") {
+                                    return (
+                                        <tr>
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
+                                                {this.state.print.ItemList[y].No}
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
+                                                {this.state.print.ItemList[y].ItemName}
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
+                                                {this.state.print.ItemList[y].Qty}
+                                            </td>
+                                        </tr>
+                                    )
+                                }
+                                if (element.ItemName == "empty") {
+                                    return (
+                                        <tr>
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", borderBottom: "0px", borderTop: "0px", textAlign: "center" }}>
+
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", borderBottom: "0px", borderTop: "0px", textAlign: "left" }}>
+
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", borderBottom: "0px", borderTop: "0px", textAlign: "center" }}>
+
+                                            </td>
+                                        </tr>
+                                    )
+                                }
+                            })}
+                        </table>
+                    </div>
+
+                    {/* Footer Packer Section */}
+                    <div
+                    >
+                        <div
+                            style={{
+                                borderBottom: "0.2px solid black",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    fontSize: "7px",
+                                    marginTop: "-3px",
+                                    marginLeft: "4px"
+                                }}
+                            >
+                                PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print.Packer.toUpperCase()}
+                            </p>
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    fontSize: "7px",
+                                    marginLeft: "2px",
+                                    marginBottom: "1.25px",
+                                    marginTop: '-8px'
+                                }}
+                            >
+                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                            </p>
+                        </div>
+
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "flex-start",
+                                width: "260px",
+                                //borderBottom: "0.2px solid black"
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    fontSize: "7px",
+                                    marginTop: '-2px',
+                                    marginLeft: '2px',
+                                    marginBottom: "2px"
+                                }}
+                            >
+                                JANGAN DIBANTING ! BARANG MUDAH PECAH !
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        if (item_list_len >= 6 && item_list_len < 8) {
+            return (
+                <div
+                    id="print2"
+                >
+                    {/* Halaman 1 Header + Tabel item 10 biji */}
+                    <div
+                        style={{
+                            border: "0.5px solid black",
+                            borderBottom: "0px",
+                            height: "159px",
+                            width: "245px",
+                            marginTop: "5px",
+                            marginLeft: "10px",
+                            marginBottom: "9px"
+                        }}
+                    >
+                        {/* Package Name Section */}
+                        <div
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    marginLeft: "2px",
+                                    fontSize: "7px",
+                                    marginTop: '-1.0px'
+                                }}
+                            >
+                                {this.state.print['PackageName'].toUpperCase()}
+                            </p>
+                        </div>
+
+                        {/* Alert 1 Section */}
+                        <div
+                            style={{
+                                borderBottom: "0.5px solid black",
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginTop: "-15.5px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "800",
+                                    marginBottom: '1px'
+                                }}
+                            >
+                                JANGAN DITERIMA BILA BUNGKUS / SEAL RUSAK
+                            </p>
+                        </div>
+
+                        {/* Header Info Section */}
+                        <div
+                            style={{
+                                height: "40px",
+                                marginLeft: "2px",
+                                marginBottom: "2px",
+                                marginTop: "-3.5px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "900",
+                                    marginTop: "2px"
+                                }}
+                            >
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
+                            </p>
+                            <div>
+                                <p
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "800",
+                                        marginTop: "-7.5px"
+                                    }}
+                                >
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                                </p>
+                            </div>
+
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "800",
+                                    marginTop: "-7.5px"
+                                }}
+                            >
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PickNo}
+                            </p>
+
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "800",
+                                    marginTop: "-7.5px"
+                                }}
+                            >
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PONo}
+                            </p>
+                        </div>
+
+                        {/* Item Table Section */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: 'center',
+                                width: "247.15px",
+                                marginLeft: "-1px",
+                                marginTop: "-2.5px",
+                                marginBottom: "3px"
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    borderCollapse: "collapse",
+                                    marginTop: "10px",
+                                    width: "200%",
+                                    borderBottom: "0.5px solid black"
+                                }}
+                            >
+                                {/* Header Table */}
+                                <tr>
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+
+                                </tr>
+
+                                {/* Body Table */}
+                                {this.state.print["ItemList"].slice(0, 7).map((element, y) => {
+                                    return (
+                                        <tr>
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
+                                                {this.state.print.ItemList[y].No}
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
+                                                {this.state.print.ItemList[y].ItemName}
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
+                                                {this.state.print.ItemList[y].Qty}
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </table>
+                        </div>
+
+
+                    </div>
+
+                    {/* Halaman 2 - Footer Section */}
+                    <div
+                        style={{
+                            border: "0.5px solid white",
+                            height: "159px",
+                            width: "245px",
+                            marginTop: "13px",
+                            marginLeft: "10px"
+                        }}
+                    >
+                        {/* Footer Packer Section */}
+                        <div
+                        >
+                            <div
+                                style={{
+                                    border: "0.5px solid black"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "7px",
+                                        marginTop: "-1.5px",
+                                        marginLeft: "2px"
+                                    }}
+                                >
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print.Packer.toUpperCase()}
+                                </p>
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "7px",
+                                        marginLeft: "2px",
+                                        marginBottom: "1.25px",
+                                        marginTop: '-8px'
+                                    }}
+                                >
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                                </p>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "flex-start",
+                                    border: "0.2px solid black",
+                                    borderTop: "0.2px solid white",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "7px",
+                                        marginTop: '-2px',
+                                        marginLeft: '2px',
+                                        marginBottom: "2px"
+                                    }}
+                                >
+                                    JANGAN DIBANTING ! BARANG MUDAH PECAH !
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            )
+        }
+        //sampe sini terakhir jumat 
+        if (item_list_len >= 8 && item_list_len < 18) {
+            return (
+                <div
+                    id="print2"
+                >
+                    {/* Halaman 1 - header + 10 table item */}
+                    <div
+                        style={{
+                            border: "0.5px solid black",
+                            borderBottom: "0px",
+                            height: "159px",
+                            width: "245px",
+                            marginTop: "5px",
+                            marginLeft: "10px",
+                            marginBottom: "9px"
+                        }}
+                    >
+                        {/* Package Name Section */}
+                        <div
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    marginLeft: "2px",
+                                    fontSize: "7px",
+                                    marginTop: '-1.0px'
+                                }}
+                            >
+                                {this.state.print['PackageName'].toUpperCase()}
+                            </p>
+                        </div>
+
+                        {/* Alert 1 Section */}
+                        <div
+                            style={{
+                                borderBottom: "0.5px solid black",
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginTop: "-15.5px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "800",
+                                    marginBottom: '1px'
+                                }}
+                            >
+                                JANGAN DITERIMA BILA BUNGKUS / SEAL RUSAK
+                            </p>
+                        </div>
+
+                        {/* Header Info Section */}
+                        <div
+                            style={{
+                                height: "40px",
+                                marginLeft: "2px",
+                                marginBottom: "2px",
+                                marginTop: "-3.5px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "900",
+                                    marginTop: "2px"
+                                }}
+                            >
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
+                            </p>
+                            <div>
+                                <p
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "800",
+                                        marginTop: "-7.5px"
+                                    }}
+                                >
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                                </p>
+                            </div>
+
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "800",
+                                    marginTop: "-7.5px"
+                                }}
+                            >
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PickNo}
+                            </p>
+
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "800",
+                                    marginTop: "-7.5px"
+                                }}
+                            >
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PONo}
+                            </p>
+                        </div>
+
+                        {/* Item Table Section */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: 'center',
+                                width: "247.15px",
+                                marginLeft: "-1px",
+                                marginTop: "-2.5px",
+                                marginBottom: "3px"
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    borderCollapse: "collapse",
+                                    marginTop: "10px",
+                                    width: "200%",
+                                    borderBottom: "0.5px solid black"
+                                }}
+                            >
+                                {/* Header Table */}
+                                <tr>
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+
+                                </tr>
+
+                                {/* Body Table */}
+                                {this.state.print["ItemList"].slice(0, 7).map((element, y) => {
+                                    return (
+                                        <tr>
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
+                                                {this.state.print.ItemList[y].No}
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
+                                                {this.state.print.ItemList[y].ItemName}
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
+                                                {this.state.print.ItemList[y].Qty}
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Halaman 2 - Footer Section */}
+                    <div
+                        style={{
+                            border: "0.5px solid white",
+                            height: "159px",
+                            width: "245px",
+                            marginTop: "13px",
+                            marginLeft: "10px",
+                        }}
+                    >
+                        {/* Item Table Section */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: 'center',
+                                width: "247.15px",
+                                marginLeft: "-1px",
+                                marginTop: "-11px",
+                                marginBottom: "3px"
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    borderCollapse: "collapse",
+                                    marginTop: "10px",
+                                    width: "200%",
+                                    borderBottom: "0.5px solid black"
+                                }}
+                            >
+                                {/* Header Table */}
+                                <tr>
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderCollapse: "collapse",
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </th>
+
+                                </tr>
+
+                                {/* Body Table */}
+                                {this.state.print["ItemList"].slice(7, item_list_len).map((element, y) => {
+                                    return (
+                                        <tr>
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
+                                                {this.state.print["ItemList"].slice(7, item_list_len)[y].No}
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
+                                                {this.state.print["ItemList"].slice(7, item_list_len)[y].ItemName}
+                                            </td>
+
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
+                                                {this.state.print["ItemList"].slice(7, item_list_len)[y].Qty}
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </table>
+                        </div>
+
+                        {/* Footer Packer Section */}
+                        <div
+                            style={{
+                                width: "246.5px",
+                                marginLeft: "-0.5px"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    border: "0.5px solid black",
+                                    marginTop: "-4px",
+                                    borderTop: "0px"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "7px",
+                                        marginTop: "-1.5px",
+                                        marginLeft: "2px"
+                                    }}
+                                >
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print.Packer.toUpperCase()}
+                                </p>
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "7px",
+                                        marginLeft: "2px",
+                                        marginBottom: "1.25px",
+                                        marginTop: '-8px'
+                                    }}
+                                >
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                                </p>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "flex-start",
+                                    border: "0.2px solid black",
+                                    borderTop: "0.2px solid white",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "7px",
+                                        marginTop: '-2px',
+                                        marginLeft: '2px',
+                                        marginBottom: "2px"
+                                    }}
+                                >
+                                    JANGAN DIBANTING ! BARANG MUDAH PECAH !
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        if (item_list_len > 24 && item_list_len < 28) {
+            let itemList1 = item_list.slice(0, 10)
+            let itemList2 = item_list.slice(10, item_list_len)
+
+            return (
+                <div
+                    id="print2"
+                >
+                    {/* Halaman 1 - Header + 10 table item */}
+                    <div
+                        style={{
+                            border: "0.5px solid black",
+                            height: "170px",
+                        }}
+                    >
+                        {/* Package Name Section & Alert 1 Section */}
+                        <div
+                            style={{
+                                marginTop: "-3.5px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontWeight: "800",
+                                    fontSize: "7px",
+                                    marginLeft: "2px",
+                                    marginTop: '4px'
+                                }}
+                            >
+                                {this.state.print.PackageName}
+                            </p>
+
+                            <div
+                                style={{
+                                    //borderTop: "1.55px solid black",
+                                    borderBottom: "0.5px solid black",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: "257px",
+                                    marginTop: "-12px"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "800",
+                                        marginBottom: '1px'
+                                    }}
+                                >
+                                    JANGAN DITERIMA BILA BUNGKUS / SEAL RUSAK
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Header Info Section */}
+                        <div
+                            style={{
+                                height: "20px",
+                                marginLeft: "2px",
+                                marginBottom: "2px",
+                                marginTop: "-2px"
+                            }}
+                        >
+
+                            <p
+                                style={{
+                                    fontSize: "5.25px",
+                                    fontWeight: "800",
+
+                                }}
+                            >
+                                CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
+                            </p>
+                            <div>
+                                <p
+                                    style={{
+                                        fontSize: "5.25px",
+                                        fontWeight: "800",
+                                        marginTop: "-3.5px"
+                                    }}
+                                >
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
+                                </p>
+                            </div>
+
+                            <p
+                                style={{
+                                    fontSize: "5.25px",
+                                    fontWeight: "800",
+                                    marginTop: "-3.5px"
+                                }}
+                            >
+                                PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PickNo}
+                            </p>
+
+                            <p
+                                style={{
+                                    fontSize: "5.25px",
+                                    fontWeight: "800",
+                                    marginTop: "-3.5px"
+                                }}
+                            >
+                                REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PONo}
+                            </p>
+
+                        </div>
+
+                        {/* Table Item Section */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: 'center',
+
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    width: "260px",
+                                    marginTop: "20px",
+                                    marginBottom: "3px",
+                                    //border: "0.0001px solid black",
+                                    borderCollapse: "collapse",
+                                    tableLayout: 'fixed'
+                                }}
+                            >
+                                <tr>
+
+                                    <th
+                                        style={{
+                                            fontSize: "5.25px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderLeft: "0px",
+                                            width: '12px'
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "5.25px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            width: "170px"
+                                        }}
+                                    >
+                                        Nama Barang
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "5.25px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            width: '22px'
+                                        }}
+                                    >
+                                        Qty(pcs)
+                                    </th>
+
+                                </tr>
+
+                                {this.state.print["ItemList"].slice(0, 10).map((element, y) => {
+                                    return (
+                                        <tr>
+                                            <th style={{ fontSize: "4.0px", border: "0.5px solid black" }}>
+                                                {this.state.print.ItemList[y].No}
+                                            </th>
+
+                                            <th style={{ fontSize: "4.0px", border: "0.5px solid black", display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+                                                {this.state.print.ItemList[y].ItemName}
+                                            </th>
+
+                                            <th style={{ fontSize: "4.0px", border: "0.5px solid black" }}>
+                                                {this.state.print.ItemList[y].Qty}
+                                            </th>
+                                        </tr>
+                                    )
+                                })}
+
+
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Halaman 2 - tabel 18 item lanjutan */}
+                    <div
+                        style={{
+                            border: "0.5px solid black",
+                            height: "170px",
+
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: 'center',
+
+                            }}
+                            className="print-table"
+                        >
+                            <table
+                                style={{
+                                    width: "260px",
+                                    marginTop: "5px",
+                                    marginBottom: "3px",
+                                    //border: "0.0001px solid black",
+                                    borderCollapse: "collapse",
+                                    tableLayout: 'fixed'
+                                }}
+                            >
+                                <tr>
+                                    <th
+                                        style={{
+                                            fontSize: "5.25px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            borderLeft: "0px",
+                                            width: '12px'
+                                        }}
+                                    >
+                                        NO
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "5.25px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            width: "170px"
+                                        }}
+                                    >
+                                        Nama Barang
+                                    </th>
+
+                                    <th
+                                        style={{
+                                            fontSize: "5.25px",
+                                            fontWeight: "800",
+                                            border: "0.5px solid black",
+                                            width: '22px'
+                                        }}
+                                    >
+                                        Qty(pcs)
+                                    </th>
+                                </tr>
+
+                                {this.state.print["ItemList"].slice(10, item_list_len).map((element, y) => {
+                                    return (
+                                        <tr>
+                                            <th style={{ fontSize: "4.0px", border: "0.5px solid black" }}>
+                                                {this.state.print["ItemList"].slice(10, item_list_len)[y].No}
+                                            </th>
+
+                                            <th style={{ fontSize: "4.0px", border: "0.5px solid black", display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+                                                {this.state.print["ItemList"].slice(10, item_list_len)[y].ItemName}
+                                            </th>
+
+                                            <th style={{ fontSize: "4.0px", border: "0.5px solid black" }}>
+                                                {this.state.print["ItemList"].slice(10, item_list_len)[y].Qty}
+                                            </th>
+                                        </tr>
+                                    )
+                                })}
+
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Halaman 3 - footer packer */}
+                    <div
+                        style={{
+                            display: 'block',
+                            border: "0.5px solid black",
+                            marginTop: "4px",
+                            width: "255x",
+                            marginLeft: "1px"
+                        }}
+                    >
+                        {/* Footer Packer Section */}
+                        <div
+                        >
+                            <div
+                                style={{
+                                    borderBottom: "0.2px solid black",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "5.25px",
+                                        marginTop: "3.5px",
+                                        marginLeft: "4px"
+                                    }}
+                                >
+                                    PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print.Packer.toUpperCase()}
+                                </p>
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "5.25px",
+                                        marginTop: "-4.5px",
+                                        marginLeft: "2px",
+                                        marginBottom: "1.25px"
+                                    }}
+                                >
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("YYYY-MM-DD")}
+                                </p>
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "flex-start",
+                                    width: "260px",
+                                    //borderBottom: "0.2px solid black"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "5.5px",
+                                        marginTop: '1.5px',
+                                        marginLeft: '2px',
+                                        marginBottom: "2px"
+                                    }}
+                                >
+                                    JANGAN DIBANTING ! BARANG MUDAH PECAH !
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+
+
+        }
+        if (item_list_len >= 28) {
+            const len_page_one = item_list_len - 10;
+            const modulus = len_page_one % 18;
+
+            if (modulus == 0) {
+                let last = this.state.displayPrint4.length - 1;
+                return (
+                    <div
+                        id="print2"
+                    >
+                        {/* Halaman 1 - Header + 10 table item */}
+                        <div
+                            style={{
+                                border: "0.5px solid black",
+                                height: "170px",
+                            }}
+                        >
+                            {/* Package Name Section & Alert 1 Section */}
+                            <div
+                                style={{
+                                    marginTop: "-3.5px",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: "7px",
+                                        marginLeft: "2px",
+                                        marginTop: '4px'
+                                    }}
+                                >
+                                    {this.state.print.PackageName}
+                                </p>
+
+                                <div
+                                    style={{
+                                        //borderTop: "1.55px solid black",
+                                        borderBottom: "0.5px solid black",
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        width: "257px",
+                                        marginTop: "-12px"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "800",
+                                            marginBottom: '1px'
+                                        }}
+                                    >
+                                        JANGAN DITERIMA BILA BUNGKUS / SEAL RUSAK
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Header Info Section */}
+                            <div
+                                style={{
+                                    height: "20px",
+                                    marginLeft: "2px",
+                                    marginBottom: "2px",
+                                    marginTop: "-2px"
+                                }}
+                            >
+
+                                <p
+                                    style={{
+                                        fontSize: "5.25px",
+                                        fontWeight: "800",
+
+                                    }}
+                                >
+                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
+                                </p>
+                                <div>
+                                    <p
+                                        style={{
+                                            fontSize: "5.25px",
+                                            fontWeight: "800",
+                                            marginTop: "-3.5px"
+                                        }}
+                                    >
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
+                                    </p>
+                                </div>
+
+                                <p
+                                    style={{
+                                        fontSize: "5.25px",
+                                        fontWeight: "800",
+                                        marginTop: "-3.5px"
+                                    }}
+                                >
+                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PickNo}
+                                </p>
+
+                                <p
+                                    style={{
+                                        fontSize: "5.25px",
+                                        fontWeight: "800",
+                                        marginTop: "-3.5px"
+                                    }}
+                                >
+                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PONo}
+                                </p>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                )
+            }
+        }
+    }
+
 
     dropDownAction1 = (e) => {
         let id = e.itemData.id;
@@ -6197,7 +7618,7 @@ class SetPackagingBody extends Component {
                 data[i] = 'none'
             }
         }
-        this.setState({ displayPrint2: data })
+        this.setState({ displayPrint2: data, selectedDropDown1: id })
         console.log(this.state.displayPrint2)
     }
 
@@ -6214,7 +7635,7 @@ class SetPackagingBody extends Component {
                 data[i] = 'none'
             }
         }
-        this.setState({ displayPrint3: data })
+        this.setState({ displayPrint3: data, selectedDropDown1: id })
     }
 
     dropDownAction3 = (e) => {
@@ -6230,7 +7651,7 @@ class SetPackagingBody extends Component {
                 data[i] = 'none'
             }
         }
-        this.setState({ displayPrint4: data })
+        this.setState({ displayPrint4: data, selectedDropDown1: id })
     }
 
 
@@ -6316,13 +7737,13 @@ class SetPackagingBody extends Component {
                     >
                         <Paging
                             enabled={true}
-                            defaultPageSize={5}
+                            defaultPageSize={10}
                             defaultPageIndex={0}
                         />
                         <Pager
                             showNavigationButtons={true}
                             showPageSizeSelector={true}
-                            allowedPageSizes={this.state.allowedPageSizes}
+                            allowedPageSizes={this.state.allowedPageSizes1}
                             showInfo={true}
                             infoText="Page {0}. Total: {1} ({2} items)"
                         />
@@ -6598,14 +8019,14 @@ class SetPackagingBody extends Component {
                         >
                             <Paging
                                 enabled={true}
-                                defaultPageSize={5}
+                                defaultPageSize={10}
                                 defaultPageIndex={0}
                             />
 
                             <Pager
                                 showNavigationButtons={true}
                                 showPageSizeSelector={true}
-                                allowedPageSizes={this.state.allowedPageSizes}
+                                allowedPageSizes={this.state.allowedPageSizes1}
                                 showInfo={true}
                                 infoText="Page {0}. Total: {1} ({2} items)"
                             />
@@ -8148,207 +9569,7 @@ class SetPackagingBody extends Component {
                         width={"300px"}
                         height={"300px"}
                     >
-                        <div id="print2" style={{ border: "1.55px solid black" }}>
-                            <p
-                                style={{
-                                    fontWeight: "700",
-                                    fontSize: "5.5px",
-                                    marginLeft: "2px"
-                                }}
-                            >
-                                {this.state.print.PackageName}
-                            </p>
-
-                            <div
-                                style={{
-                                    borderTop: "1.55px solid black",
-                                    borderBottom: "1.55px solid black",
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    width: "260px"
-                                }}
-                            >
-                                <p
-                                    style={{
-                                        fontSize: "5px",
-                                        // fontWeight: "700",
-                                    }}
-                                >
-                                    JANGAN DITERIMA BILA BUNGKUS / SEAL RUSAK
-                                </p>
-
-                            </div>
-
-                            <div
-                                style={{
-                                    height: "20px",
-                                    marginLeft: "2px",
-                                    marginBottom: "2px"
-                                }}
-                            >
-
-                                <p
-                                    style={{
-                                        fontSize: "4.5px",
-                                        fontWeight: "500",
-
-                                    }}
-                                >
-                                    Customer Name : {this.state.print.CustomerName}
-                                </p>
-                                <p
-                                    style={{
-                                        fontSize: "4.5px",
-                                        fontWeight: "500",
-                                        marginTop: "-3.5px"
-                                    }}
-                                >
-                                    Notice : {this.state.print.Notice}
-                                </p>
-
-                                <p
-                                    style={{
-                                        fontSize: "4.5px",
-                                        fontWeight: "500",
-                                        marginTop: "-3.5px"
-                                    }}
-                                >
-                                    PickNo : {this.state.print.PickNo}
-                                </p>
-
-                                <p
-                                    style={{
-                                        fontSize: "4.5px",
-                                        fontWeight: "500",
-                                        marginTop: "-3.5px"
-                                    }}
-                                >
-                                    Ref / PO No : {this.state.print.PONo}
-                                </p>
-
-                            </div>
-
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: 'center'
-                                }}
-                                className="print-table"
-                            >
-                                <table
-                                    style={{
-                                        width: "250px",
-                                        marginTop: "8px",
-                                        marginBottom: "3px",
-                                        border: "0.0001px solid black",
-                                        borderCollapse: "collapse"
-                                    }}
-                                >
-                                    <tr>
-
-                                        <th
-                                            style={{
-                                                fontSize: "4.5px",
-                                                fontWeight: "500",
-                                                border: "0.0001px solid black",
-                                            }}
-                                        >
-                                            No
-                                        </th>
-
-                                        <th
-                                            style={{
-                                                fontSize: "4.5px",
-                                                fontWeight: "500",
-                                                border: "0.0001px solid black",
-                                            }}
-                                        >
-                                            Nama Barang
-                                        </th>
-
-                                        <th
-                                            style={{
-                                                fontSize: "4.5px",
-                                                fontWeight: "500",
-                                                border: "0.0001px solid black",
-                                            }}
-                                        >
-                                            Qty(pcs)
-                                        </th>
-
-                                    </tr>
-
-                                    {this.state.print.ItemList.map((x, y) => {
-                                        return (
-                                            <tr>
-                                                <th style={{ fontSize: "4.5px", border: "0.0001px solid black", borderWidth: "0.1px" }}>
-                                                    {this.state.print.ItemList[y].No}
-                                                </th>
-
-                                                <th style={{ fontSize: "4.5px", border: "0.0001px solid black", borderWidth: "0.1px" }}>
-                                                    {this.state.print.ItemList[y].ItemName}
-                                                </th>
-
-                                                <th style={{ fontSize: "4.5px", border: "0.0001px solid black", borderWidth: "0.1px" }}>
-                                                    {this.state.print.ItemList[y].Qty}
-                                                </th>
-                                            </tr>
-                                        )
-                                    })}
-                                </table>
-                            </div>
-
-                            <div
-                                style={{
-                                    borderBottom: "0.2px solid black",
-                                }}
-                            >
-                                <p
-                                    style={{
-                                        fontWeight: "500",
-                                        fontSize: "4.5px",
-                                        marginTop: "-3.5px",
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    Packer: {this.state.print.Packer}
-                                </p>
-                                <p
-                                    style={{
-                                        fontWeight: "500",
-                                        fontSize: "4.5px",
-                                        marginTop: "-3.5px",
-                                        marginLeft: "2px"
-                                    }}
-                                >
-                                    Tanggal Packing : {moment(this.state.print.PackingDate).format("YYYY-MM-DD")}
-                                </p>
-                            </div>
-
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    width: "260px",
-                                    //borderBottom: "0.2px solid black"
-                                }}
-                            >
-                                <p
-                                    style={{
-                                        fontWeight: "500",
-                                        fontSize: "5px",
-                                    }}
-                                >
-                                    Jangan Dibanting Barang Mudah Pecah!
-                                </p>
-                            </div>
-
-                        </div>
+                        {this.renderTable2()}
 
                         <div
                             style={{
@@ -8369,26 +9590,26 @@ class SetPackagingBody extends Component {
                 {/* Popup buat display printnya ke user ~ layout 01*/}
                 <div>
                     <Popup
-                        visible={false}//this.state.isPrintDisplay
+                        visible={this.state.isPrintDisplay}//this.state.isPrintDisplay
                         closeOnOutsideClick={true}
                         onHiding={this.disablePrintDisplay}
                         showTitle={false}
                         width={"54vw"}
+                        height={"72.5vh"}
                     >
                         {this.renderTable()}
-
-                        {this.renderDropDown()}
 
                         <div
                             style={{
                                 display: "flex",
-                                justifyContent: "flex-end",
+                                justifyContent: 'space-between',
                                 marginTop: "20px",
                                 marginRight: "12.5px"
                             }}
                         >
+                            {this.renderDropDown()}
                             <Button
-                                text="Generate PDF"
+                                text="Download PDF & Print"
                                 type="default"
                                 elementAttr={this.state.buttonAttributes}
                                 stylingMode="contained"

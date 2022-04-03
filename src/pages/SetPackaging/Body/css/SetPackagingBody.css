@@ -33,6 +33,7 @@
     font-weight: 400;
     color: rgba(82, 87, 92, 1);
 }
+
 .MainTitle-Btn2 {
     margin-top: 40px;
     margin-right: 25px;
@@ -52,7 +53,7 @@
 }
 
 .dx-data-row .Table1-Column-Number {
-    background-color: rgba(177, 242, 242, 1);
+    background-color: rgba(199, 246, 246, 1);
 
 }
 
@@ -85,6 +86,7 @@
     padding-right: 1%;
 
 }
+
 .Table2-TitleGroup {
     display: flex;
     flex-direction: row;
@@ -95,6 +97,7 @@
     background-color: rgba(0, 86, 184, 1);
     color: white;
 }
+
 .dx-data-row .Table2-Column-Number {
     background-color: rgba(177, 242, 242, 1);
 }
@@ -103,6 +106,7 @@
     background-color: rgba(36, 157, 233, 1);
     color: white;
 }
+
 .dx-data-row .Table2-Column-ItemCode {
     background-color: rgba(199, 246, 246, 1);
 }
@@ -111,6 +115,7 @@
     background-color: rgba(36, 157, 233, 1);
     color: white;
 }
+
 .dx-data-row .Table2-Column-ItemName {
     background-color: rgba(199, 246, 246, 1);
 }
@@ -119,6 +124,7 @@
     background-color: rgba(36, 157, 233, 1);
     color: white;
 }
+
 .dx-data-row .Table2-Column-Qty {
     background-color: rgba(199, 246, 246, 1);
 }
@@ -139,6 +145,7 @@
     color: black;
     margin-top: 5px;
 }
+
 .PopUpError-Btn {
     display: flex;
     flex-direction: row;
@@ -149,7 +156,7 @@
 
 /* POPUP SUBMIT SUCCESS SECTION */
 .PopUpSubmitSuccess-Text {
-    color:black;
+    color: black;
     font-weight: 500;
     font-size: 16px;
 }
