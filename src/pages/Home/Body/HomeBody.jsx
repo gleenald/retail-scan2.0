@@ -1171,7 +1171,7 @@ class HomeBody extends Component {
                         <Column
                             dataField="Picklist Number"
                             dataType="string"
-                            width={1100}
+                            width={1250}
                             cssClass="column-picklistNumber"
                             cellRender={this.cellRenderPicklistNo}
                         >
@@ -1181,7 +1181,7 @@ class HomeBody extends Component {
                         <Column
                             dataField="PickDate"
                             dataType="string"
-                            width={350}
+                            width={750}
                             cssClass="column-picklistNumber"
                             cellRender={this.cellRenderPickDate}
                         >

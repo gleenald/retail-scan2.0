@@ -48,7 +48,6 @@ import { TelegramLogger } from 'node-telegram-log';
 import jsPDF from "jspdf";
 
 
-
 //setup telegram logger
 const logger = new TelegramLogger("5035979844:AAH50oirpx1fFdRoBpstovW8vJJWvP4W42c", "-773570755");
 
@@ -856,7 +855,7 @@ class SetPackagingBody extends Component {
     disableSuperUserEnableEdit = () => {
         try {
             this.setState({
-                isSuperUserDeleteItem: false
+                isSuperUserEnableEdit: false
             })
         }
         catch (err) {
@@ -2663,7 +2662,48 @@ class SetPackagingBody extends Component {
                     isPrintDisplay: true
                 })
 
+                if (this.state.print["ItemList"].length > 27) {
+                    const jumlah_item = this.state.print["ItemList"].length;
+                    const jumlah_item_di_halaman_pertama = 10;
+                    const jumlah_item_di_halaman_lain = 15;
 
+                    let modulus = (jumlah_item - jumlah_item_di_halaman_pertama) % jumlah_item_di_halaman_lain;
+
+                    let jumlah_halaman;
+
+                    if (modulus != 0) {
+                        jumlah_halaman = Math.floor((jumlah_item - jumlah_item_di_halaman_pertama) / jumlah_item_di_halaman_lain) + 3;
+                    }
+                    if (modulus == 0) {
+                        jumlah_halaman = ((jumlah_item - jumlah_item_di_halaman_pertama) / jumlah_item_di_halaman_lain) + 2
+                    }
+
+                    console.log(`jumlah halaman ${jumlah_halaman}`)
+
+
+                    let temp = [];
+                    let menu = [];
+                    for (var i = 0; i < jumlah_halaman; i++) {
+                        menu.push({
+                            id: i,
+                            text: `Halaman ${i + 1}`
+                        })
+                        if (i == 0) {
+                            temp.push('block')
+                        }
+                        if (i != 0) {
+                            temp.push('none')
+                        }
+                    }
+
+                    this.setState({
+                        displayPrint4: temp,
+                        dropDown4: menu
+                    })
+
+                    console.log(this.state.displayPrint4)
+                    console.log(this.state.dropDown4)
+                }
 
             }
             if (stat >= 400 && stat <= 500) {
@@ -3514,11 +3554,12 @@ class SetPackagingBody extends Component {
         })
     }
 
-
+    //display
     renderTable = () => {
         let item_list = this.state.print["ItemList"]
         let item_list_len = this.state.print["ItemList"].length
 
+        //display barang 1 - 6
         if (item_list_len > 0 && item_list_len < 7) {
             if (item_list_len < 6) {
 
@@ -3527,14 +3568,19 @@ class SetPackagingBody extends Component {
                 }
             }
             return (
-                <div>
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center"
+                    }}
+                >
                     <div
                         style={{
                             border: "2px solid black",
                             height: "60vh",
                             width: "50vw",
-                            display: this.state.displayPrint1[0],
-                            backgroundColor: "white"
+                            display: this.state.displayPrint1[0]
                         }}
                     >
                         {/* Package Name Section */}
@@ -3654,7 +3700,7 @@ class SetPackagingBody extends Component {
                         >
                             <table
                                 style={{
-                                    width: "750px",
+                                    width: "50vw",
                                     borderCollapse: "collapse",
                                     borderBottom: "2px solid black"
                                 }}
@@ -3755,7 +3801,8 @@ class SetPackagingBody extends Component {
                                                         border: "2px solid black",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        height: "3.3vh"
+                                                        height: "3.3vh",
+                                                        borderLeft: "0px",
                                                     }}
                                                 >
                                                     {item_list[y].No}
@@ -3801,7 +3848,7 @@ class SetPackagingBody extends Component {
                             <div
                                 style={{
                                     height: "5.5vh",
-                                    borderTop: "0.5px solid black"
+                                    //borderTop: "0.5px solid black"
                                 }}
                             >
                                 <p
@@ -3855,6 +3902,7 @@ class SetPackagingBody extends Component {
                 </div>
             )
         }
+        //display barang 7 - 10
         if (item_list_len > 6 && item_list_len < 11) {
 
             if (item_list_len < 10) {
@@ -3996,6 +4044,7 @@ class SetPackagingBody extends Component {
                                 style={{
                                     width: "750px",
                                     borderCollapse: "collapse",
+                                    width: "50vw",
                                     //borderBottom: "2px solid black"
                                 }}
                             >
@@ -4093,6 +4142,7 @@ class SetPackagingBody extends Component {
                                                 <th
                                                     style={{
                                                         border: "2px solid black",
+                                                        borderLeft: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         height: "2.82vh",
@@ -4210,6 +4260,7 @@ class SetPackagingBody extends Component {
 
 
         }
+        //display barang 11 - 24
         if (item_list_len > 10 && item_list_len < 25) {
             let itemList1 = item_list.slice(0, 10)
             let itemList2 = item_list.slice(10, item_list_len)
@@ -4226,7 +4277,6 @@ class SetPackagingBody extends Component {
                     <div
                         style={{
                             border: "2px solid black",
-                            borderBottom: "0px",
                             height: "55.3vh",
                             width: "50vw",
                             backgroundColor: "white",
@@ -4349,7 +4399,7 @@ class SetPackagingBody extends Component {
                         >
                             <table
                                 style={{
-                                    width: "750px",
+                                    width: "50vw",
                                     borderCollapse: "collapse",
                                     //borderBottom: "2px solid black"
                                 }}
@@ -4451,7 +4501,7 @@ class SetPackagingBody extends Component {
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         height: "2.82vh",
-
+                                                        borderLeft: "0px",
                                                     }}
                                                 >
                                                     {itemList1[y].No}
@@ -4476,7 +4526,6 @@ class SetPackagingBody extends Component {
                                                         borderRight: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-
                                                         height: "2.82vh",
                                                     }}
                                                 >
@@ -4708,6 +4757,7 @@ class SetPackagingBody extends Component {
                 </div >
             )
         }
+        //display barang 25 - 27
         if (item_list_len > 24 && item_list_len < 28) {
             let itemList1 = item_list.slice(0, 10)
             let itemList2 = item_list.slice(10, item_list_len)
@@ -4718,7 +4768,6 @@ class SetPackagingBody extends Component {
                     <div
                         style={{
                             border: "2px solid black",
-                            borderBottom: "0px",
                             height: "54.8vh",
                             width: "50vw",
                             backgroundColor: "white",
@@ -4841,7 +4890,7 @@ class SetPackagingBody extends Component {
                         >
                             <table
                                 style={{
-                                    width: "750px",
+                                    width: "50vw",
                                     borderCollapse: "collapse",
                                     //borderBottom: "2px solid black"
                                 }}
@@ -5151,49 +5200,1035 @@ class SetPackagingBody extends Component {
                 </div >
             )
         }
+        //display barang 28 keatas
         if (item_list_len > 27) {
             const len_page_one = item_list_len - 10
             const modulus = len_page_one % 15
 
-
             if (modulus == 0) {
+                const jumlah_item = item_list_len;
+                const jumlah_item_di_halaman_pertama = 10;
+                const jumlah_item_di_halaman_lain = 15;
+
+                let jumlah_halaman;
+                let jumlah_halaman_item;
+
+                function pageCount() {
+                    jumlah_halaman = ((jumlah_item - jumlah_item_di_halaman_pertama) / jumlah_item_di_halaman_lain) + 2;
+                    jumlah_halaman_item = jumlah_halaman - 2;
+
+                    console.log(`table item page: ${jumlah_halaman_item}`)
+                }
+
+                pageCount()
+
+                let index_item_halaman_pertama = [0, 10];
+                let index_awal = [10];
+                let index_akhir = [25];
+
+                function itemIndex() {
+                    if (jumlah_halaman_item == 1) {
+                        index_awal.push(25)
+                        index_akhir.push(jumlah_item)
+                    }
+                    if (jumlah_halaman_item > 1) {
+                        for (var i = 0; i < jumlah_halaman_item - 1; i++) {
+                            index_awal.push(index_awal[i] + 15)
+                            index_akhir.push(index_akhir[i] + 15)
+                        }
+                    }
+
+                    console.log(index_item_halaman_pertama)
+                    console.log(index_awal)
+                    console.log(index_akhir)
+                }
+
+                itemIndex()
+
+                let pageCollection = [];
+
+                function pageCol() {
+                    for (var i = 0; i < jumlah_halaman_item; i++) {
+                        pageCollection.push('page')
+                    }
+                }
+
+                pageCol()
+
                 return (
-                    <div>
-                        <p>yenny </p>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {/* Halaman 1 Header + 10 tabel item */}
+                        <div
+                            style={{
+                                border: "2px solid black",
+                                height: "55.5vh",
+                                width: "50vw",
+                                display: this.state.displayPrint4[0],
+                                marginBottom: "10px",
+                            }}
+                        >
+                            {/* Package Name Section */}
+                            <div>
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        marginLeft: "2px",
+                                        fontSize: 16,
+                                        marginTop: "0.5vh"
+                                    }}
+                                >
+                                    {this.state.print['PackageName'].toUpperCase()}
+                                </p>
+                            </div>
+
+                            {/* Alert barang mudah pecah */}
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginTop: "-3.0vh",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 18,
+                                        marginBottom: "-0.01vh"
+                                    }}
+                                >
+                                    JANGAN DITERIMA BILA PEMBUNGKUS / SEAL RUSAK
+                                </p>
+                            </div>
+
+                            {/* Info1 Section */}
+                            <div
+                                style={{
+                                    marginTop: "-0.7vh",
+                                    marginBottom: "-0.7vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["CustomerName"].toUpperCase()}
+                                </p>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        // backgroundColor:"green",
+                                        marginTop: "-2.7vh",
+                                        marginLeft: "2px",
+                                        height: "7.3vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                        }}
+                                    >
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                    </p>
+                                    <div>
+                                        <p
+                                            style={{
+                                                fontWeight: "800",
+                                                fontSize: 15,
+                                            }}
+                                        >
+                                            {this.state.print["Notice"].toUpperCase()}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        marginTop: "-0.5vh",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PickNo"]}
+                                </p>
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        marginTop: "-1vh",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PONo"]}
+                                </p>
+
+                            </div>
+
+                            {/* Table Section */}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: 'center'
+                                }}
+                                className="print-table"
+                            >
+                                <table
+                                    style={{
+                                        width: "750px",
+                                        borderCollapse: "collapse",
+                                        width: "50vw",
+                                    }}
+                                >
+                                    <tr>
+
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderLeft: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NO
+                                        </th>
+
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </th>
+
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderRight: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </th>
+
+
+
+                                    </tr>
+
+                                    {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1]).map((element, index) => {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderLeft: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                        //borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].No}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                        //borderBottom: "0px"
+                                                    }}
+                                                >
+                                                    {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].ItemName}
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        //borderBottom: "0px",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    })}
+                                </table>
+                            </div>
+
+                        </div>
+
+                        {/* Halaman looping item table */}
+                        {pageCollection.map((element, idx) => {
+                            return (
+                                <div
+                                    style={{
+                                        border: "2px solid black",
+                                        height: "54.8vh",
+                                        width: "50vw",
+                                        backgroundColor: "white",
+                                        display: this.state.displayPrint4[idx + 1],
+                                    }}
+                                >
+                                    {/* Table Section */}
+                                    <div>
+                                        <table
+                                            style={{
+                                                width: "49.8vw",
+                                                borderCollapse: "collapse",
+                                            }}
+                                        >
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        borderTop: "0px",
+                                                        borderLeft: "0px",
+                                                        height: "3.0vh"
+                                                    }}
+                                                >
+                                                    NO
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        height: "3.0vh",
+                                                        borderTop: "0px",
+                                                    }}
+                                                >
+                                                    NAMA BARANG
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        height: "3.0vh",
+                                                        borderTop: "0px",
+                                                    }}
+                                                >
+                                                    QTY PCS
+                                                </th>
+                                            </tr>
+
+                                            {item_list.slice(index_awal[idx], index_akhir[idx]).map((element, index) => {
+                                                return (
+                                                    <tr>
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                borderLeft: "0px",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                height: "2.82vh",
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                        </th>
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                textAlign: "left",
+                                                                height: "2.82vh",
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                        </th>
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                borderRight: "0px",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                height: "2.82vh",
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                        </th>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </table>
+                                    </div>
+                                </div>
+                            )
+                        })}
+
+                        {/* Halaman footer */}
+                        <div
+                            style={{
+                                border: "2px solid white",
+                                height: "54.8vh",
+                                width: "50vw",
+                                backgroundColor: "white",
+                                display: this.state.displayPrint4[this.state.displayPrint4.length - 1],
+                            }}
+                        >
+                            {/* Info2 & Alert 2 Section */}
+                            <div
+                                style={{
+                                    marginTop: "-1.25vh",
+                                    border: "2px solid black"
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        borderBottom: "2px solid black",
+                                        height: "5.5vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            marginLeft: "2px",
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                        }}
+                                    >
+                                        PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
+                                    </p>
+                                    <p
+                                        style={{
+                                            marginLeft: "2px",
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                            marginTop: "-1.25vh"
+                                        }}
+                                    >
+                                        TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
+                                    </p>
+                                </div>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "flex-start",
+                                        height: "4vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                            fontSize: 16,
+                                            marginLeft: "2px"
+                                        }}
+                                    >
+                                        JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 )
             }
             if (modulus != 0) {
-                const total_item = item_list_len;
-                const total_item_in_page_one = 10;
-                const total_item_in_other_page = 15;
+                const jumlah_item = item_list_len;
+                const jumlah_item_di_halaman_pertama = 10;
+                const jumlah_item_di_halaman_lain = 15;
 
+                let jumlah_halaman;
+                let jumlah_halaman_item;
+
+                function pageCount() {
+                    jumlah_halaman = Math.floor((jumlah_item - jumlah_item_di_halaman_pertama) / jumlah_item_di_halaman_lain) + 3;
+                    jumlah_halaman_item = jumlah_halaman - 3
+
+                    console.log(`table item page: ${jumlah_halaman_item}`)
+                }
+
+                pageCount()
+
+                let index_item_halaman_pertama = [0, 10];
+                let index_awal = [10];
+                let index_akhir = [25];
+
+                function itemIndex() {
+                    if (jumlah_halaman_item == 1) {
+                        index_awal.push(25)
+                        index_akhir.push(jumlah_item)
+                    }
+                    if (jumlah_halaman_item > 1) {
+                        for (var i = 0; i < jumlah_halaman_item - 1; i++) {
+                            index_awal.push(index_awal[i] + 15)
+                            index_akhir.push(index_akhir[i] + 15)
+                        }
+
+                        index_awal.push(index_akhir[jumlah_halaman_item - 1])
+                        index_akhir.push(jumlah_item)
+                    }
+
+                    console.log(index_item_halaman_pertama)
+                    console.log(index_awal)
+                    console.log(index_akhir)
+                }
+
+                itemIndex()
+
+                let pageCollection = [];
+
+                function pageCol() {
+                    for (var i = 0; i < jumlah_halaman_item; i++) {
+                        pageCollection.push('page')
+                    }
+                }
+
+                pageCol()
 
                 return (
-                    <div>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
                         {/* Halaman 1 Header + Tabel item */}
-                        <div>
-                            <p>gleenald halaman1 </p>
+                        <div
+                            style={{
+                                border: "2px solid black",
+                                height: "55.5vh",
+                                width: "50vw",
+                                display: this.state.displayPrint4[0],
+                                marginBottom: "10px",
+                            }}
+                        >
+                            {/* Package Name Section */}
+                            <div>
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        marginLeft: "2px",
+                                        fontSize: 16,
+                                        marginTop: "0.5vh"
+                                    }}
+                                >
+                                    {this.state.print['PackageName'].toUpperCase()}
+                                </p>
+                            </div>
+
+                            {/* Alert barang mudah pecah */}
+                            <div
+                                style={{
+                                    borderBottom: "2px solid black",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginTop: "-3.0vh",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        fontWeight: "800",
+                                        fontSize: 18,
+                                        marginBottom: "-0.01vh"
+                                    }}
+                                >
+                                    JANGAN DITERIMA BILA PEMBUNGKUS / SEAL RUSAK
+                                </p>
+                            </div>
+
+                            {/* Info1 Section */}
+                            <div
+                                style={{
+                                    marginTop: "-0.7vh",
+                                    marginBottom: "-0.7vh"
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["CustomerName"].toUpperCase()}
+                                </p>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        // backgroundColor:"green",
+                                        marginTop: "-2.7vh",
+                                        marginLeft: "2px",
+                                        height: "7.3vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                        }}
+                                    >
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                    </p>
+                                    <div>
+                                        <p
+                                            style={{
+                                                fontWeight: "800",
+                                                fontSize: 15,
+                                            }}
+                                        >
+                                            {this.state.print["Notice"].toUpperCase()}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        marginTop: "-0.5vh",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PickNo"]}
+                                </p>
+                                <p
+                                    style={{
+                                        marginLeft: "2px",
+                                        fontWeight: "800",
+                                        marginTop: "-1vh",
+                                        fontSize: 15,
+                                    }}
+                                >
+                                    REF&nbsp;/&nbsp;PO&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print["PONo"]}
+                                </p>
+
+                            </div>
+
+                            {/* Table Section */}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: 'center'
+                                }}
+                                className="print-table"
+                            >
+                                <table
+                                    style={{
+                                        width: "750px",
+                                        borderCollapse: "collapse",
+                                        width: "50vw",
+                                        //borderBottom: "2px solid black"
+                                    }}
+                                >
+                                    <tr>
+
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderLeft: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NO
+                                        </th>
+
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </th>
+
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderRight: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </th>
+
+
+
+                                    </tr>
+
+                                    {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1]).map((element, y, z) => {
+                                        if (element.ItemName != "empty") {
+                                            return (
+                                                <tr>
+                                                    <th
+                                                        style={{
+                                                            border: "2px solid black",
+                                                            borderLeft: "0px",
+                                                            fontSize: 14,
+                                                            fontWeight: "800",
+                                                            height: "2.82vh",
+                                                            //borderBottom: "0px"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].No}
+                                                    </th>
+
+                                                    <th
+                                                        style={{
+                                                            border: "2px solid black",
+                                                            fontSize: 14,
+                                                            fontWeight: "800",
+                                                            textAlign: "left",
+                                                            height: "2.82vh",
+                                                            //borderBottom: "0px"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].ItemName}
+                                                    </th>
+
+                                                    <th
+                                                        style={{
+                                                            border: "2px solid black",
+                                                            borderRight: "0px",
+                                                            fontSize: 14,
+                                                            fontWeight: "800",
+                                                            //borderBottom: "0px",
+                                                            height: "2.82vh",
+                                                        }}
+                                                    >
+                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].Qty}
+                                                    </th>
+                                                </tr>
+                                            )
+                                        }
+                                    })}
+                                </table>
+
+                            </div>
+
                         </div>
 
-                        {/* Halaman 2 tabel item 15 biji */}
-                        <div>
-                            <p>gleenald halaman2</p>
+                        {/* Halaman table item looping */}
+                        {pageCollection.map((element, idx) => {
+                            return (
+                                <div
+                                    style={{
+                                        border: "2px solid black",
+                                        height: "54.8vh",
+                                        width: "50vw",
+                                        backgroundColor: "white",
+                                        display: this.state.displayPrint4[idx + 1],
+                                    }}
+                                >
+                                    {/* Table Section */}
+                                    <div>
+                                        <table
+                                            style={{
+                                                width: "49.8vw",
+                                                borderCollapse: "collapse",
+                                            }}
+                                        >
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        borderTop: "0px",
+                                                        borderLeft: "0px",
+                                                        height: "3.0vh"
+                                                    }}
+                                                >
+                                                    NO
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        height: "3.0vh",
+                                                        borderTop: "0px",
+                                                    }}
+                                                >
+                                                    NAMA BARANG
+                                                </th>
+
+                                                <th
+                                                    style={{
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        height: "3.0vh",
+                                                        borderTop: "0px",
+                                                    }}
+                                                >
+                                                    QTY PCS
+                                                </th>
+                                            </tr>
+
+                                            {item_list.slice(index_awal[idx], index_akhir[idx]).map((element, index) => {
+                                                return (
+                                                    <tr>
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                borderLeft: "0px",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                height: "2.82vh",
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                        </th>
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                textAlign: "left",
+                                                                height: "2.82vh",
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                        </th>
+                                                        <th
+                                                            style={{
+                                                                border: "2px solid black",
+                                                                borderRight: "0px",
+                                                                fontSize: 14,
+                                                                fontWeight: "800",
+                                                                height: "2.82vh",
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                        </th>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </table>
+                                    </div>
+                                </div>
+                            )
+                        })}
+
+                        {/* Halaman item sisa */}
+                        <div
+                            style={{
+                                border: "2px solid black",
+                                height: "54.8vh",
+                                width: "50vw",
+                                backgroundColor: "white",
+                                display: this.state.displayPrint4[this.state.displayPrint4.length - 2],
+                            }}
+                        >
+                            {/* Table Section */}
+                            <div>
+                                <table
+                                    style={{
+                                        width: "49.8vw",
+                                        borderCollapse: "collapse",
+                                    }}
+                                >
+                                    <tr>
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderTop: "0px",
+                                                borderLeft: "0px",
+                                                height: "3.0vh"
+                                            }}
+                                        >
+                                            NO
+                                        </th>
+
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                height: "3.0vh",
+                                                borderTop: "0px",
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </th>
+
+                                        <th
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "800",
+                                                border: "2px solid black",
+                                                borderRight: "0px",
+                                                height: "3.0vh",
+                                                borderTop: "0px",
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </th>
+                                    </tr>
+
+                                    {item_list.slice(Math.max(jumlah_item - modulus, 0)).map((element, index) => {
+                                        return (
+                                            <tr>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderLeft: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].No}
+                                                </th>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].ItemName}
+                                                </th>
+                                                <th
+                                                    style={{
+                                                        border: "2px solid black",
+                                                        borderRight: "0px",
+                                                        fontSize: 14,
+                                                        fontWeight: "800",
+                                                        textAlign: "left",
+                                                        height: "2.82vh",
+                                                    }}
+                                                >
+                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].Qty}
+                                                </th>
+                                            </tr>
+                                        )
+                                    })}
+                                </table>
+                            </div>
                         </div>
 
-                        {/* Halaman 3 tabel item sisa */}
-                        <div>
-                            <p>gleenald halaman3</p>
-                        </div>
+                        {/* Halaman footer */}
+                        <div
+                            style={{
+                                border: "2px solid white",
+                                height: "54.8vh",
+                                width: "50vw",
+                                backgroundColor: "white",
+                                display: this.state.displayPrint4[this.state.displayPrint4.length - 1],
+                            }}
+                        >
+                            {/* Info2 & Alert 2 Section */}
+                            <div
+                                style={{
+                                    marginTop: "-1.25vh",
+                                    border: "2px solid black"
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        borderBottom: "2px solid black",
+                                        height: "5.5vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            marginLeft: "2px",
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                        }}
+                                    >
+                                        PACKER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["Packer"].toUpperCase()}
+                                    </p>
+                                    <p
+                                        style={{
+                                            marginLeft: "2px",
+                                            fontWeight: "800",
+                                            fontSize: 15,
+                                            marginTop: "-1.25vh"
+                                        }}
+                                    >
+                                        TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.state.print["PackingDate"]}
+                                    </p>
+                                </div>
 
-                        {/* Halaman 4 footer */}
-                        <div>
-                            <p>footer</p>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "flex-start",
+                                        height: "4vh"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontWeight: "800",
+                                            fontSize: 16,
+                                            marginLeft: "2px"
+                                        }}
+                                    >
+                                        JANGAN&nbsp;DIBANTING&nbsp;!&nbsp;BARANG&nbsp;MUDAH&nbsp;PECAH&nbsp;!
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )
             }
-
         }
     }
 
@@ -6668,8 +7703,6 @@ class SetPackagingBody extends Component {
     }
 
 
-
-
     componentDidMount() {
         this.getValidAndPackage();
     }
@@ -6685,6 +7718,7 @@ class SetPackagingBody extends Component {
                         <span className="MainTitle-Text3">Set Packages - </span>
                         <span className="MainTitle-Text4">Scanned Item</span>
                     </p>
+
 
                     <div className="MainTitle-Btn2">
                         <Button
@@ -8588,7 +9622,7 @@ class SetPackagingBody extends Component {
                             style={{
                                 display: "flex",
                                 justifyContent: "flex-end",
-                                marginTop: "30px"
+                                marginTop: "30px",
                             }}
                         >
                             <Button
@@ -8610,26 +9644,28 @@ class SetPackagingBody extends Component {
                         width={"54vw"}
                         height={"72.5vh"}
                     >
-                        {this.renderTable()}
+                        <div>
+                            {this.renderTable()}
 
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: 'space-between',
-                                marginTop: "20px",
-                                marginRight: "12.5px"
-                            }}
-                        >
-                            {this.renderDropDown()}
-                            <Button
-                                text="Download PDF & Print"
-                                type="default"
-                                elementAttr={this.state.buttonAttributes}
-                                stylingMode="contained"
-                                onClick={this.generatePDF}
-                            />
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: 'space-between',
+                                    marginTop: "20px",
+                                    marginRight: "14px",
+                                    marginLeft: "14px",
+                                }}
+                            >
+                                {this.renderDropDown()}
+                                <Button
+                                    text="Download PDF & Print"
+                                    type="default"
+                                    elementAttr={this.state.buttonAttributes}
+                                    stylingMode="contained"
+                                    onClick={this.generatePDF}
+                                />
+                            </div>
                         </div>
-
                     </Popup>
                 </div >
 
