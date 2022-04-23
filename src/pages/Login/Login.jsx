@@ -297,38 +297,6 @@ class Login extends Component {
                     </div>
 
 
-                    {/* Header Section */}
-                    {/* <div
-                        style={{
-                            justifyContent: 'center',
-                            alignItems: "center",
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}
-                    >
-                        <h2
-                            style={{
-                                fontSize: 36,
-                                fontWeight: '500',
-                                color: 'rgba(82, 87, 92, 1)'
-                            }}
-                        >
-                            Silahkan Input Username & Password
-                        </h2>
-
-                        <h2
-                            style={{
-                                marginTop: "-30px",
-                                fontSize: 36,
-                                fontWeight: '500',
-                                color: 'rgba(82, 87, 92, 1)'
-                            }}
-                        >
-                            Untuk dapat menggunakan aplikasi
-                        </h2>
-                    </div> */}
-
-
                     {/* TextBox Section */}
                     <div>
                         <p>Username : </p>
@@ -467,6 +435,7 @@ class Login extends Component {
                                     width={100}
                                     elementAttr={this.state.okBtnAttr}
                                     onClick={this.disableClientSideErr}
+
                                 />
                             </div>
                         </Popup>

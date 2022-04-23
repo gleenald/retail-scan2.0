@@ -128,7 +128,7 @@ class SetPackagingBody extends Component {
             dataGridItem: "",
             //PAGE SIZE array
             allowedPageSizes: [5, 10],
-            allowedPageSizes1: [10, 20],
+            allowedPageSizes1: [30, 60],
 
             //button-attributes
             buttonAttributes: {
@@ -2330,6 +2330,7 @@ class SetPackagingBody extends Component {
                 this.setState({ isDeliveryItemNull: true })
             }
             if (packageParse) {
+
                 //push itemcode ke arr result
                 let result = [];
                 for (var i in packageParse) {
@@ -2337,12 +2338,12 @@ class SetPackagingBody extends Component {
                         result.push(packageParse[i].ItemList[a].ItemCode)
                     }
                 }
+
                 if (result.length < validParse.length) {
                     this.setState({ isTypeItemLess: true })
                 }
-                if (result.length == validParse.length) {
+                if (result.length == validParse.length || result.length > validParse.length) {
                     console.log('jumlah item sudah sama');
-
                     //jalanin proses membandingkan
                     let perbandingan = [];
                     for (var i in validParse) {
@@ -2648,9 +2649,9 @@ class SetPackagingBody extends Component {
                 //console.log(data.Packagings.find(isSame))
                 this.state.print["PackageName"] = data.Packagings.find(isSame).PackageName
                 this.state.print["CustomerName"] = data.CustomerName == null ? "(Data belum tersedia)" : data.CustomerName
-                this.state.print["Notice"] = data.Notice == null ? "(Data belum tersedia)" : data.Notice
-                this.state.print["PickNo"] = data.PickNo == null ? "(DATA BELUM TERSEDIA)" : data.PickNo
-                this.state.print["PONo"] = data.PONo == null ? "(DATA BELUM TERSEDIA)" : data.PONo
+                this.state.print["Notice"] = data.Notice == null ? "" : data.Notice
+                this.state.print["PickNo"] = data.AbsEntry == null ? "(DATA BELUM TERSEDIA)" : data.AbsEntry
+                this.state.print["PONo"] = data.RefNumber == null ? "(DATA BELUM TERSEDIA)" : data.RefNumber
                 this.state.print["Packer"] = localStorage.getItem('Username')
                 this.state.print["PackingDate"] = moment(data.Packagings.find(isSame).PackingDate).format("DD/MM/YYYY")
                 this.state.print["ItemList"] = ItemList
@@ -3360,6 +3361,7 @@ class SetPackagingBody extends Component {
                         if (info.Packagings.length == 0) {
                             //generate new transno & masukin transno ke localStorage
                             if (window.localStorage.getItem("TransNo")) {
+                                window.localStorage.setItem("TransNo", info.TransNo)
                                 console.log(`TransNo : ${window.localStorage.getItem("TransNo")}`)
                             }
                             if (!window.localStorage.getItem("TransNo")) {
@@ -3371,6 +3373,7 @@ class SetPackagingBody extends Component {
 
                             //masukin no absEntry ke localstorage
                             if (window.localStorage.getItem("AbsEntry")) {
+                                window.localStorage.setItem("AbsEntry", this.props.match.params.picklistnumber)
                                 console.log(`AbsEntry : ${window.localStorage.getItem("AbsEntry")}`)
                             }
                             if (!window.localStorage.getItem("AbsEntry")) {
@@ -3401,6 +3404,7 @@ class SetPackagingBody extends Component {
                         if (info.Packagings.length > 0) {
                             //generate new transno & masukin transno ke localStorage
                             if (window.localStorage.getItem("TransNo")) {
+                                window.localStorage.setItem("TransNo", info.TransNo)
                                 console.log(`TransNo : ${window.localStorage.getItem("TransNo")}`)
                             }
                             if (!window.localStorage.getItem("TransNo")) {
@@ -3412,6 +3416,7 @@ class SetPackagingBody extends Component {
 
                             //masukin no absEntry ke localstorage
                             if (window.localStorage.getItem("AbsEntry")) {
+                                window.localStorage.setItem("AbsEntry", this.props.match.params.picklistnumber)
                                 console.log(`AbsEntry : ${window.localStorage.getItem("AbsEntry")}`)
                             }
                             if (!window.localStorage.getItem("AbsEntry")) {
@@ -6396,7 +6401,7 @@ class SetPackagingBody extends Component {
                                     marginTop: "-7.5px"
                                 }}
                             >
-                                NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                                NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
                             </p>
                         </div>
 
@@ -6657,7 +6662,7 @@ class SetPackagingBody extends Component {
                                         marginTop: "-7.5px"
                                     }}
                                 >
-                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
                                 </p>
                             </div>
 
@@ -6913,7 +6918,7 @@ class SetPackagingBody extends Component {
                                         marginTop: "-7.5px"
                                     }}
                                 >
-                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}v
                                 </p>
                             </div>
 
@@ -7250,7 +7255,7 @@ class SetPackagingBody extends Component {
                                         marginTop: "-7.5px"
                                     }}
                                 >
-                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
                                 </p>
                             </div>
 
@@ -7644,7 +7649,7 @@ class SetPackagingBody extends Component {
                                             marginTop: "-7.5px"
                                         }}
                                     >
-                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
                                     </p>
                                 </div>
 
@@ -8038,7 +8043,7 @@ class SetPackagingBody extends Component {
                                             marginTop: "-7.5px"
                                         }}
                                     >
-                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;LOREM IPSUM DOLOR SIT AMET.LOREM IPSUM DOLOR SIT AMET.LOREM
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
                                     </p>
                                 </div>
 
@@ -8737,7 +8742,7 @@ class SetPackagingBody extends Component {
                                 disabled={this.state.textBoxStat}
                                 value={this.state.scanItem}
                                 onValueChange={(y) => { this.setState({ scanItem: y }) }}
-                                onEnterKey={this.scanBarcode}
+                                onEnterKey={this.scanItemCode}
                             />
                         </div>
 
