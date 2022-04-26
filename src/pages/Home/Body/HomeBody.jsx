@@ -40,9 +40,6 @@ import moment from 'moment';
 //import telegram-log
 import { TelegramLogger } from 'node-telegram-log';
 
-//import sweet alert
-import swal from "@sweetalert/with-react";
-
 
 
 //setup telegram logger
