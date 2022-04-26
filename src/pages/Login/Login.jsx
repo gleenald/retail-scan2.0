@@ -16,7 +16,6 @@ import "./Login.css"
 import { Dots } from "react-activity";
 import "react-activity/dist/Dots.css";
 
-
 //import devExtreme
 import {
     TextBox,
@@ -29,6 +28,7 @@ import { TelegramLogger } from 'node-telegram-log';
 
 //import react-router-dom
 import { withRouter } from 'react-router-dom';
+
 
 
 
@@ -157,7 +157,7 @@ class Login extends Component {
 
 
     //FUNCTION LOGIN
-    login = async () => {
+    login = async (cb) => {
         try {
             //nyalain popup loading
             this.setState({ isLoading: true })
@@ -180,58 +180,12 @@ class Login extends Component {
                 redirect: 'follow'
             };
 
-            const res = await fetch(`${baseURL}/login`, requestOptions)
-            const stat = await res.status
-            const data = await res.json()
+            const res = await fetch(`${baseURL}/login`, requestOptions);
+            const stat = await res.status;
+            const data = await res.json();
 
-            console.log(stat)
-            console.log(data)
-
-            if (stat >= 200 && stat <= 300) {
-                //masukin token dan username ke internal db
-                localStorage.setItem('UserToken', data.token)
-                localStorage.setItem('Username', this.state.usernameVal)
-
-                //lanjut ke page berikutnya
-                this.props.history.push({
-                    pathname: "/home"
-                })
-
-                //matiin popup loading
-                this.setState({ isLoading: false })
-
-                //logger-telegram keluar
-                logger.log(`username ${window.localStorage.getItem("Username")} login ke retail scan`)
-            }
-            if (stat >= 400 && stat <= 500) {
-
-                //console keluar
-                console.log(data.description)
-
-                //alert error keluar utk user
-                this.setState({
-                    errMsg: data.description,
-                    isLoading: false,
-                    isClientSideErr: true
-                })
-
-                //logger-telegram keluar
-                logger.error(`@Gleenald HTTP Stat: ${stat}, ClientSide Error, function login() halaman Login, msg: ${data.description}`)
-            }
-            if (stat >= 500 && stat <= 600) {
-
-                //console keluar
-                console.log(data.description)
-
-                //alert error keluar utk user
-                this.setState({
-                    errMsg: data.description,
-                    isLoading: false,
-                    isServersideError: true
-                })
-
-                //logger-telegram keluar
-                logger.error(`@Gleenald HTTP Stat: ${stat}, Serverside Error, function login() halaman Login, msg: ${data.description}`)
+            if (cb) {
+                cb(stat, data)
             }
         }
         catch (err) {
@@ -252,7 +206,106 @@ class Login extends Component {
         }
     }
 
+    do_login = () => {
+        this.login(async (stat, data) => {
+            try {
+                if (stat >= 200 && stat <= 300) {
+                    //masukin token dan username ke internal db
+                    localStorage.setItem('UserToken', data.token)
+                    localStorage.setItem('Username', this.state.usernameVal)
 
+                    const Token = localStorage.getItem("UserToken");
+
+                    var myHeaders = new Headers();
+                    myHeaders.append("Content-Type", "application/json");
+                    myHeaders.append("Authorization", `Bearer ${Token}`);
+                    myHeaders.append("Access-Control-Allow-Origin", "*");
+
+                    let requestOptions = {
+                        method: 'POST',
+                        headers: myHeaders,
+                        redirect: 'follow',
+                    };
+
+                    const res = await fetch(`${baseURL}/unlock-my-picklist`, requestOptions)
+                    const status = await res.status;
+                    const info = await res.json();
+
+                    if (status == 200 || status == 404) {
+
+                        //lanjut ke page berikutnya
+                        this.props.history.push({
+                            pathname: "/home"
+                        })
+
+                        //matiin popup loading
+                        this.setState({ isLoading: false })
+
+                        //logger-telegram keluar
+                        logger.log(`username ${window.localStorage.getItem("Username")} login ke retail scan`)
+
+                        console.log('berhasil login dan release picklist')
+                    }
+                    if (stat >= 500 && stat <= 600) {
+
+                        //console keluar
+                        console.log(data.description)
+
+                        //alert error keluar utk user
+                        this.setState({
+                            errMsg: data.description,
+                            isLoading: false,
+                            isServersideError: true
+                        })
+
+                        //logger-telegram keluar
+                        logger.error(`@Gleenald HTTP Stat: ${stat}, Serverside Error, function do_login() halaman Login, msg: ${data.description}`)
+
+                    }
+                }
+                if (stat >= 400 && stat <= 500) {
+
+                    //console keluar
+                    console.log(data.description)
+
+                    //alert error keluar utk user
+                    this.setState({
+                        errMsg: data.description,
+                        isLoading: false,
+                        isClientSideErr: true
+                    })
+
+                    //logger-telegram keluar
+                    logger.error(`@Gleenald HTTP Stat: ${stat}, ClientSide Error, function login() halaman Login, msg: ${data.description}`)
+                }
+                if (stat >= 500 && stat <= 600) {
+
+                    //console keluar
+                    console.log(data.description)
+
+                    //alert error keluar utk user
+                    this.setState({
+                        errMsg: data.description,
+                        isLoading: false,
+                        isServersideError: true
+                    })
+
+                    //logger-telegram keluar
+                    logger.error(`@Gleenald HTTP Stat: ${stat}, Serverside Error, function login() halaman Login, msg: ${data.description}`)
+
+                }
+            }
+            catch (err) {
+                console.log(err)
+            }
+        })
+    }
+
+    componentDidMount() {
+        window.addEventListener("popstate", event => {
+            window.history.forward()
+        })
+    }
 
     render() {
         return (
@@ -369,7 +422,7 @@ class Login extends Component {
                                 borderRadius: 10,
                                 // backgroundColor: 'rgba(0, 86, 184, 1)'
                             }}
-                            onClick={this.login}
+                            onClick={this.do_login}
                         />
 
                     </div>

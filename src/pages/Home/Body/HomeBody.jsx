@@ -40,6 +40,9 @@ import moment from 'moment';
 //import telegram-log
 import { TelegramLogger } from 'node-telegram-log';
 
+//import sweet alert
+import swal from "@sweetalert/with-react";
+
 
 
 //setup telegram logger
@@ -57,6 +60,8 @@ class HomeBody extends Component {
             isServersideError: false,
             isTryCatchErr: false,
             isSort: false,
+            isUnlock: false,
+            isLogout: false,
 
             //buat tampung errMsg
             errMsg: "",
@@ -97,6 +102,16 @@ class HomeBody extends Component {
             okBtnAttr: {
                 class: 'okBtnAttr'
             },
+            yesAttr: {
+                class: 'yesBTN'
+            },
+            noAttr: {
+                class: 'noBTN'
+            },
+
+
+            msg_unlock: "",
+            picklistNum_unlock: ""
         }
     }
 
@@ -174,6 +189,21 @@ class HomeBody extends Component {
         catch (err) {
             console.log(err)
             logger.error(`@Gleenald App Error! function disableSort(), Halaman Home, msg: ${err}`)
+            this.setState({
+                tryCatchErrMsg: err,
+                isTryCatchErr: true
+            })
+        }
+    }
+    disableLogout = () => {
+        try {
+            this.setState({
+                isLogout: false
+            })
+        }
+        catch (err) {
+            console.log(err)
+            logger.error(`@Gleenald App Error! function disableLogout(), Halaman Home, msg: ${err}`)
             this.setState({
                 tryCatchErrMsg: err,
                 isTryCatchErr: true
@@ -1036,7 +1066,9 @@ class HomeBody extends Component {
                         NewArr.push({
                             "No": parseInt(i) + 1,
                             "Picklist Number": data[i].AbsEntry,
-                            "PickDate": moment(data[i].PickDate, "YYYY-MM-DD").format("D MMMM YYYY")
+                            "PickDate": moment(data[i].PickDate, "YYYY-MM-DD").format("D MMMM YYYY"),
+                            "IsLocked": !data[i].IsLocked ? "No" : "Yes",
+                            "Username": !data[i].Username ? "-" : data[i].Username
                         })
                     }
 
@@ -1082,15 +1114,20 @@ class HomeBody extends Component {
         })
     }
 
-
     componentDidMount() {
         this.getData()
+
+        window.addEventListener("popstate", event => {
+            window.history.forward()
+        })
     }
 
     render() {
 
         return (
             <div>
+
+
                 {/* Title Section */}
                 <div className="titleContainer">
                     <p className="titleText">
@@ -1132,9 +1169,12 @@ class HomeBody extends Component {
 
                         <div className="search-sort-grp">
                             <Button
-                                text="Sort"
+                                text="Sort Picklist"
                                 className="sort-btn"
                                 onClick={this.enableSort}
+                                style={{
+                                    backgroundColor: "rgb(204, 204, 204)"
+                                }}
                             />
 
                             <TextBox
@@ -1171,7 +1211,7 @@ class HomeBody extends Component {
                         <Column
                             dataField="Picklist Number"
                             dataType="string"
-                            width={1250}
+                            width={950}
                             cssClass="column-picklistNumber"
                             cellRender={this.cellRenderPicklistNo}
                         >
@@ -1181,12 +1221,33 @@ class HomeBody extends Component {
                         <Column
                             dataField="PickDate"
                             dataType="string"
-                            width={750}
+                            width={300}
                             cssClass="column-picklistNumber"
                             cellRender={this.cellRenderPickDate}
                         >
 
                         </Column>
+
+                        <Column
+                            dataField="IsLocked"
+                            dataType="string"
+                            width={300}
+                            cssClass="column-picklistNumber"
+                            cellRender={this.cellRenderPickDate}
+                        >
+
+                        </Column>
+
+                        <Column
+                            dataField="Username"
+                            dataType="string"
+                            width={300}
+                            cssClass="column-picklistNumber"
+                            cellRender={this.cellRenderPickDate}
+                        >
+
+                        </Column>
+
                     </DataGrid>
 
                     <div className="bottom-option">

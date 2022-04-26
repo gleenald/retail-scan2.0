@@ -19,6 +19,7 @@ import { withRouter } from 'react-router-dom';
 
 //import telegram-log
 import { TelegramLogger } from 'node-telegram-log';
+import { baseURL } from '../../utils/config/config';
 
 
 
@@ -35,6 +36,7 @@ class Header extends Component {
             //untuk status popup di header component
             isLogout: false,
             isTryCatchErr: false,
+            isServersideError: false,
 
             //button-attributes devextreme
             buttonAttributes: {
@@ -93,13 +95,64 @@ class Header extends Component {
         }
     }
 
+    disableServerSideErr = () => {
+        try {
+            this.setState({
+                isServersideError: false
+            })
+        }
+        catch (err) {
+            console.log(err)
+            logger.error(`@Gleenald App Error! function disableServerSideErr(), Halaman Home, msg: ${err}`)
+            this.setState({
+                tryCatchErrMsg: err,
+                isTryCatchErr: true
+            })
+        }
+    }
+
 
     //FUNCTION LOGOUT
-    logout = () => {
+    logout = async () => {
         try {
-            this.props.history.push({
-                pathname: '/'
-            })
+            //release all picklist associated with this username
+            const Token = localStorage.getItem("UserToken");
+
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${Token}`);
+
+
+            let requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                redirect: 'follow',
+            };
+
+            const res = await fetch(`${baseURL}/unlock-my-picklist`, requestOptions)
+            const stat = await res.status;
+            const data = await res.json();
+
+            console.log(stat)
+            console.log(data)
+
+            if (stat == 200 || stat == 404) {
+
+                window.localStorage.clear()
+
+                this.props.history.push({
+                    pathname: '/'
+                })
+
+                console.log('berhasil hapus local storage dan release all lock picklist')
+
+            }
+            if (stat >= 500 && stat <= 600) {
+                logger.error(`@Gleenald HTTP Stat: ${stat}, Serverside Error {function: logout() header component}, NodeMsg: ${data.description}, Username: ${window.localStorage.getItem('Username')}`);
+
+                this.setState({
+                    isServersideError: true
+                })
+            }
         }
         catch (err) {
             console.log(err);
@@ -177,13 +230,30 @@ class Header extends Component {
                     <Popup
                         visible={this.state.isLogout}
                         closeOnOutsideClick={true}
-                        width={450}
-                        height={230}
+                        width={600}
+                        height={250}
                         showTitle={false}
                         onHiding={this.disableLogout}
                     >
-                        <h2>Akun</h2>
-                        <p>Apakah anda ingin keluar ?</p>
+                        <h2
+                            style={{
+                                fontSize: 30,
+                                fontWeight: "600",
+                                color: "rgba(0, 86, 184, 1.0)"
+                            }}
+                        >
+                            Konfirmasi
+                        </h2>
+
+                        <p
+                            style={{
+                                fontSize: 16,
+                                fontWeight: "400",
+                                marginTop: "5px"
+                            }}
+                        >
+                            Apakah anda ingin keluar dari aplikasi Onda Retail Scan?
+                        </p>
 
                         <div
                             style={{
@@ -191,7 +261,7 @@ class Header extends Component {
                                 flexDirection: 'row',
                                 alignItems: 'flex-end',
                                 justifyContent: 'flex-end',
-                                marginTop: 35
+                                marginTop: 40
                             }}
                         >
                             <Button
@@ -254,6 +324,48 @@ class Header extends Component {
                                 width={100}
                                 elementAttr={this.state.okBtnAttr}
                                 onClick={this.disableTryCatchErr}
+                            />
+                        </div>
+                    </Popup>
+                </div>
+
+                {/* Popup Err500 */}
+                <div>
+                    <Popup
+                        visible={this.state.isServersideError}
+                        closeOnOutsideClick={true}
+                        onHiding={this.disableServerSideErr}
+                        showTitle={false}
+                        width={587}
+                        height={220}
+                        className="PopupServersideError"
+                    >
+                        <div>
+                            <p className="MainTitle">
+                                Error!
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="msg">
+                                Oops.., Err HTTP Stat:500! {this.state.errMsg}
+                            </p>
+                        </div>
+
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'flex-end',
+                                marginTop: 30
+                            }}
+                        >
+                            <Button
+                                text='Ok'
+                                stylingMode='contained'
+                                type='default'
+                                width={100}
+                                onClick={this.disableServerSideErr}
                             />
                         </div>
                     </Popup>

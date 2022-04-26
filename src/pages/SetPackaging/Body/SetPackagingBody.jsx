@@ -3357,6 +3357,9 @@ class SetPackagingBody extends Component {
                     const status = await res.status;
                     const info = await res.json();
 
+                    console.log(status)
+                    console.log(info)
+
                     if (status >= 200 && status <= 300) {
                         if (info.Packagings.length == 0) {
                             //generate new transno & masukin transno ke localStorage
@@ -3384,7 +3387,7 @@ class SetPackagingBody extends Component {
                             }
 
                             //remove packagelist data
-                            window.localStorage.removeItem("PackageList")
+                            //window.localStorage.removeItem("PackageList")
 
                             this.setState({
                                 validList: new DataSource({
@@ -3393,6 +3396,11 @@ class SetPackagingBody extends Component {
                                     })
                                 }),
                                 isLoading: false,
+                                dataGridPackage: new DataSource({
+                                    store: new ArrayStore({
+                                        data: JSON.parse(window.localStorage.getItem('PackageList'))
+                                    })
+                                })
                             })
 
                             const validList = localStorage.getItem("ValidList");
@@ -8455,6 +8463,10 @@ class SetPackagingBody extends Component {
 
     componentDidMount() {
         this.getValidAndPackage();
+
+        window.addEventListener("popstate", event => {
+            window.history.forward()
+        })
     }
 
     render() {
