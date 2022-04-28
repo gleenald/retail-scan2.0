@@ -6560,7 +6560,7 @@ class SetPackagingBody extends Component {
                                     marginTop: '-8px'
                                 }}
                             >
-                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
                             </p>
                         </div>
 
@@ -6814,7 +6814,7 @@ class SetPackagingBody extends Component {
                                         marginTop: '-8px'
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
                                 </p>
                             </div>
 
@@ -7153,7 +7153,7 @@ class SetPackagingBody extends Component {
                                         marginTop: '-8px'
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
                                 </p>
                             </div>
 
@@ -7492,7 +7492,7 @@ class SetPackagingBody extends Component {
                                     marginTop: '-8px'
                                 }}
                             >
-                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
                             </p>
                         </div>
 
@@ -7889,7 +7889,7 @@ class SetPackagingBody extends Component {
                                         marginTop: '-8px'
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
                                 </p>
                             </div>
 
@@ -8374,7 +8374,7 @@ class SetPackagingBody extends Component {
                                         marginTop: '-8px'
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(this.state.print.PackingDate).format("MM/DD/YYYY")}
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
                                 </p>
                             </div>
 
