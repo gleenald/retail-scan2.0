@@ -386,7 +386,7 @@ class Login extends Component {
                                     this.setState({ passwordVal: y })
                                 }
                             }
-                            onEnterKey={this.login}
+                            onEnterKey={this.do_login}
                         >
 
                         </TextBox>
