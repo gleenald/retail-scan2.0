@@ -5,6 +5,8 @@ import React, { Component } from 'react'
 import BG from "./../../utils/img/LoginWallpaper.png"
 import BeOneLogo from "./../../utils/img/BEONE-LOGO2.png";
 import OndaLogo from "./../../utils/img/ONDA-LOGO2.png";
+import onda_exclusive from "./../../utils/img/onda-exclusive.png";
+import dcota from "./../../utils/img/dcota.png";
 
 //import baseURL
 import { baseURL } from "./../../utils/config/config";
@@ -165,13 +167,27 @@ class Login extends Component {
             //fetch
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-            myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9uZGEiLCJpYXQiOjE2MzUyMzE4MDksImV4cCI6MTYzNjQ0MTQwOX0.LUJyq4di-BG8SlR-q90JxsCaBW_dAB__rN3eblNbspI");
+            //myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9uZGEiLCJpYXQiOjE2MzUyMzE4MDksImV4cCI6MTYzNjQ0MTQwOX0.LUJyq4di-BG8SlR-q90JxsCaBW_dAB__rN3eblNbspI");
             myHeaders.append("Access-Control-Allow-Origin", "*")
 
-            var raw = JSON.stringify({
-                "Username": this.state.usernameVal,
-                "Password": this.state.passwordVal
-            });
+            // var raw = JSON.stringify({
+            //     "Username": this.state.usernameVal,
+            //     "Password": this.state.passwordVal
+            // });
+
+            let raw;
+            if (this.state.usernameVal == "" && this.state.passwordVal == "") {
+                raw = JSON.stringify({
+                    "Username": window.localStorage.getItem("Username"),
+                    "Password": window.localStorage.getItem("Password")
+                })
+            }
+            if (this.state.usernameVal !== "" && this.state.passwordVal !== "") {
+                raw = JSON.stringify({
+                    "Username": this.state.usernameVal,
+                    "Password": this.state.passwordVal
+                })
+            }
 
             var requestOptions = {
                 method: 'POST',
@@ -183,6 +199,9 @@ class Login extends Component {
             const res = await fetch(`${baseURL}/login`, requestOptions);
             const stat = await res.status;
             const data = await res.json();
+
+            console.log(stat)
+            console.log(data)
 
             if (cb) {
                 cb(stat, data)
@@ -213,6 +232,7 @@ class Login extends Component {
                     //masukin token dan username ke internal db
                     localStorage.setItem('UserToken', data.token)
                     localStorage.setItem('Username', this.state.usernameVal)
+                    localStorage.setItem('Password', this.state.passwordVal)
 
                     const Token = localStorage.getItem("UserToken");
 
@@ -301,10 +321,24 @@ class Login extends Component {
         })
     }
 
+    get_user_data = () => {
+        const user = window.localStorage.getItem("Username")
+        const pass = window.localStorage.getItem("Password")
+
+        if (user && pass) {
+            this.setState({
+                usernameVal: user,
+                passwordVal: pass
+            })
+        }
+    }
+
     componentDidMount() {
         window.addEventListener("popstate", event => {
             window.history.forward()
         })
+
+        this.get_user_data()
     }
 
     render() {
@@ -345,8 +379,10 @@ class Login extends Component {
                             marginTop: '50px'
                         }}
                     >
-                        <img src={BeOneLogo} style={{ width: "192px", height: "108px" }} />
-                        <img src={OndaLogo} style={{ width: "192px", height: "108px", marginTop: '15px', marginLeft: '50px' }} />
+                        <img src={OndaLogo} style={{ width: "150px", height: "75px", marginTop: '15px' }} />
+                        <img src={onda_exclusive} style={{ width: "150px", height: "150px", marginTop: '-30px', marginLeft: '30px' }} />
+                        <img src={dcota} style={{ width: "150px", height: "150px", marginTop: '-30px', marginLeft: '30px' }} />
+                        <img src={BeOneLogo} style={{ width: "150px", height: "75px", marginLeft: '30px', marginTop: "5px" }} />
                     </div>
 
 
@@ -358,6 +394,7 @@ class Login extends Component {
                             placeholder="masukkan username anda disini"
                             width={675}
                             height={50}
+                            value={this.state.usernameVal}
                             style={{
                                 borderRadius: 15,
                             }}
@@ -381,12 +418,13 @@ class Login extends Component {
                             style={{
                                 borderRadius: 15,
                             }}
+                            value={this.state.passwordVal}
                             onValueChange={
                                 (y) => {
                                     this.setState({ passwordVal: y })
                                 }
                             }
-                            onEnterKey={this.login}
+                            onEnterKey={this.do_login}
                         >
 
                         </TextBox>

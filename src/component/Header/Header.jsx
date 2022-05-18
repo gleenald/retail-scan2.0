@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 
 //import image
 import OndaLogo from "./../../utils/img/ONDA-LOGO3.png";
+import onda_exclusive from "./../../utils/img/onda-exclusive.png";
+import dcota from "./../../utils/img/dcota.png";
 
 //import css file
 import "./css/Header.css";
@@ -137,7 +139,7 @@ class Header extends Component {
 
             if (stat == 200 || stat == 404) {
 
-                window.localStorage.clear()
+                //window.localStorage.clear()
 
                 this.props.history.push({
                     pathname: '/'
@@ -174,13 +176,37 @@ class Header extends Component {
                     justifyContent: "space-between",
                     alignItems: "center",
                     flexWrap: "wrap",
-                    height: "9vh"
+                    height: "10vh"
                 }}
             >
                 {/* Logo Section */}
                 <img
                     src={OndaLogo}
                     className="img"
+                    style={{
+                        width: "6.5%",
+                        marginTop: "-12px"
+                    }}
+                />
+
+                <img
+                    src={onda_exclusive}
+                    className="img"
+                    style={{
+                        width: "6.5%",
+                        marginTop: "-25px",
+                        marginLeft: "25px"
+                    }}
+                />
+
+                <img
+                    src={dcota}
+                    className="img"
+                    style={{
+                        width: "6.5%",
+                        marginTop: "-25px",
+                        marginLeft: "25px"
+                    }}
                 />
 
                 {/* Left ButtonGroup Section */}
@@ -188,7 +214,7 @@ class Header extends Component {
                     style={{
                         backgroundColor: "white",
                         height: "100%",
-                        width: "70%",
+                        width: "65%",
                         marginTop: "-13px",
                         display: "flex",
                         alignItems: "center"
@@ -371,7 +397,7 @@ class Header extends Component {
                     </Popup>
                 </div>
 
-            </div>
+            </div >
         );
     }
 }
