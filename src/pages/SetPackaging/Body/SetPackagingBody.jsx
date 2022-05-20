@@ -9542,7 +9542,7 @@ class SetPackagingBody extends Component {
                                 disabled={this.state.textBoxStat}
                                 value={this.state.scanItem}
                                 onValueChange={(y) => { this.setState({ scanItem: y }) }}
-                                onEnterKey={this.scanItemCode}
+                                onEnterKey={this.scanBarcode}
                                 onFocusIn={
                                     () => {
                                         this.setState({
