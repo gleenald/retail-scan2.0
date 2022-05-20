@@ -193,6 +193,10 @@ class SetPackagingBody extends Component {
             result: [],
             awal: [],
             akhir: [],
+
+            form_bg_color: "rgba(229, 238, 248, 1)",
+            form_border_color: "rgba(0, 86, 184, 1)",
+            form_border_width: 1
         }
     }
 
@@ -791,7 +795,8 @@ class SetPackagingBody extends Component {
     disableSuperUserEditPackage = () => {
         try {
             this.setState({
-                isSuperUserEditPackage: false
+                isSuperUserEditPackage: false,
+                superUserPass: ""
             })
         }
         catch (err) {
@@ -807,7 +812,8 @@ class SetPackagingBody extends Component {
     disableSuperUserDeletePackage = () => {
         try {
             this.setState({
-                isSuperUserDeletePackage: false
+                isSuperUserDeletePackage: false,
+                superUserPass: ""
             })
         }
         catch (err) {
@@ -823,7 +829,8 @@ class SetPackagingBody extends Component {
     disableSuperUserEditQtyItem = () => {
         try {
             this.setState({
-                isSuperUserEditQtyItem: false
+                isSuperUserEditQtyItem: false,
+                superUserPass: ""
             })
         }
         catch (err) {
@@ -839,7 +846,8 @@ class SetPackagingBody extends Component {
     disableSuperUserDeleteItem = () => {
         try {
             this.setState({
-                isSuperUserDeleteItem: false
+                isSuperUserDeleteItem: false,
+                superUserPass: ""
             })
         }
         catch (err) {
@@ -855,7 +863,8 @@ class SetPackagingBody extends Component {
     disableSuperUserEnableEdit = () => {
         try {
             this.setState({
-                isSuperUserEnableEdit: false
+                isSuperUserEnableEdit: false,
+                superUserPass: ""
             })
         }
         catch (err) {
@@ -966,9 +975,13 @@ class SetPackagingBody extends Component {
 
                     const parse = JSON.parse(PackageList)
 
-                    const userEntry = `Package ${this.state.PackageName.toUpperCase()}`
+                    const userEntry = `Package No. ${this.state.PackageName.toUpperCase()}`
 
                     const result = parse.filter(x => x.PackagingName === userEntry)
+
+                    console.log('test')
+                    console.log(userEntry)
+                    console.log('test')
 
                     console.log(result.length)
 
@@ -989,11 +1002,19 @@ class SetPackagingBody extends Component {
                             "No": 0
                         })
 
-                        for (var i in parse) {
-                            parse[i]["No"] = parseInt(i) + 1
+                        function sortAlphabet(x, y) {
+                            if (x.PackagingName < y.PackagingName) { return -1; }
+                            if (x.PackagingName > y.PackagingName) { return 1; }
+                            return 0;
                         }
 
-                        localStorage.setItem('PackageList', JSON.stringify(parse))
+                        var package_data = parse.sort(sortAlphabet);
+
+                        for (var i in package_data) {
+                            package_data[i]["No"] = parseInt(i) + 1
+                        }
+
+                        localStorage.setItem('PackageList', JSON.stringify(package_data))
                         let result = localStorage.getItem('PackageList');
 
                         let y = JSON.parse(result)
@@ -1061,11 +1082,19 @@ class SetPackagingBody extends Component {
                 //save to localStorage
                 localStorage.setItem('PackageList', JSON.stringify(local))
 
+                function sortAlphabet(x, y) {
+                    if (x.PackagingName < y.PackagingName) { return -1; }
+                    if (x.PackagingName > y.PackagingName) { return 1; }
+                    return 0;
+                }
+
+                var package_data = local.sort(sortAlphabet);
+
                 //display table
                 this.setState({
                     dataGridPackage: new DataSource({
                         store: new ArrayStore({
-                            data: local
+                            data: package_data
                         })
                     })
                 })
@@ -1109,11 +1138,20 @@ class SetPackagingBody extends Component {
                 }
                 //save to localStorage
                 localStorage.setItem('PackageList', JSON.stringify(local))
+
+                function sortAlphabet(x, y) {
+                    if (x.PackagingName < y.PackagingName) { return -1; }
+                    if (x.PackagingName > y.PackagingName) { return 1; }
+                    return 0;
+                }
+
+                var package_data = local.sort(sortAlphabet);
+
                 //display table
                 this.setState({
                     dataGridPackage: new DataSource({
                         store: new ArrayStore({
-                            data: local
+                            data: package_data
                         })
                     })
                 })
@@ -1182,11 +1220,20 @@ class SetPackagingBody extends Component {
                     }
                     //save to localStorage
                     localStorage.setItem('PackageList', JSON.stringify(local))
+
+                    function sortAlphabet(x, y) {
+                        if (x.PackagingName < y.PackagingName) { return -1; }
+                        if (x.PackagingName > y.PackagingName) { return 1; }
+                        return 0;
+                    }
+
+                    var package_data = local.sort(sortAlphabet);
+
                     //display data ke user
                     this.setState({
                         dataGridPackage: new DataSource({
                             store: new ArrayStore({
-                                data: local
+                                data: package_data
                             })
                         })
                     })
@@ -1398,6 +1445,8 @@ class SetPackagingBody extends Component {
                     "Status": parse[this.state.selectedIndex]["Status"]
                 }
             })
+
+            console.log(y)
             //POST Packaging fetch
             let myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -1416,6 +1465,8 @@ class SetPackagingBody extends Component {
                 body: raw,
                 redirect: 'follow'
             };
+
+            console.log(raw)
 
             const res = await fetch(`${baseURL}/packaging`, requestOptions)
             const stat = await res.status
@@ -1564,11 +1615,20 @@ class SetPackagingBody extends Component {
                 //ubah data di localstorage
                 parse[this.state.selectedIndex]["Status"] = "EnableEditBox"
                 localStorage.setItem("PackageList", JSON.stringify(parse))
+
+                function sortAlphabet(x, y) {
+                    if (x.PackagingName < y.PackagingName) { return -1; }
+                    if (x.PackagingName > y.PackagingName) { return 1; }
+                    return 0;
+                }
+
+                var package_data = parse.sort(sortAlphabet);
+
                 //display data package ke user
                 this.setState({
                     dataGridPackage: new DataSource({
                         store: new ArrayStore({
-                            data: parse
+                            data: package_data
                         })
                     })
                 })
@@ -2144,11 +2204,26 @@ class SetPackagingBody extends Component {
                         })
                         //save ke internal db
                         window.localStorage.setItem('PackageList', JSON.stringify(DataPackaging));
+
+                        var raw_item_list = DataPackaging[selectedIndex]["ItemList"];
+
+                        function sortAlphabet(x, y) {
+                            if (x.ItemName < y.ItemName) { return -1; }
+                            if (x.ItemName > y.ItemName) { return 1; }
+                            return 0;
+                        }
+
+                        var item_list = raw_item_list.sort(sortAlphabet);
+
+                        for (var i in item_list) {
+                            item_list[i]["No"] = parseInt(i) + 1;
+                        }
+
                         //tampilin data ke user
                         this.setState({
                             dataGridItem: new DataSource({
                                 store: new ArrayStore({
-                                    data: DataPackaging[selectedIndex]["ItemList"]
+                                    data: item_list
                                 })
                             }),
                             scanItem: "",
@@ -2220,6 +2295,7 @@ class SetPackagingBody extends Component {
                 const packagingParse = JSON.parse(listPackaging);
                 const index = this.state.selectedIndex;
 
+                //jika di kardus sudah ada barangnya
                 if (packagingParse[index]['ItemList'].length !== 0) {
 
                     //detect sudah ada belum item di kardus itu
@@ -2255,6 +2331,21 @@ class SetPackagingBody extends Component {
                             "Qty": 1,
                             "No": packagingParse[index]['ItemList'].length + 1
                         })
+
+                        var raw_item_list = packagingParse[index]['ItemList'];
+
+                        function sortAlphabet(x, y) {
+                            if (x.ItemName < y.ItemName) { return -1; }
+                            if (x.ItemName > y.ItemName) { return 1; }
+                            return 0;
+                        }
+
+                        var item_list = raw_item_list.sort(sortAlphabet)
+
+                        for (var i in item_list) {
+                            item_list[i]["No"] = parseInt(i) + 1;
+                        }
+
                         //save ke internal db
                         let string = JSON.stringify(packagingParse);
                         localStorage.setItem('PackageList', string);
@@ -2262,7 +2353,7 @@ class SetPackagingBody extends Component {
                         this.setState({
                             dataGridItem: new DataSource({
                                 store: new ArrayStore({
-                                    data: packagingParse[index]['ItemList']
+                                    data: item_list
                                 })
                             })
                         })
@@ -2286,6 +2377,7 @@ class SetPackagingBody extends Component {
                     //save data ke internal db
                     let string = JSON.stringify(packagingParse);
                     localStorage.setItem('PackageList', string);
+
                     //tampilin user data terbaru
                     this.setState({
                         dataGridItem: new DataSource({
@@ -2641,7 +2733,17 @@ class SetPackagingBody extends Component {
                     return y.PackageName == name
                 }
 
-                let ItemList = data.Packagings.find(isSame).PackagingDetails;
+                let raw_item_list = data.Packagings.find(isSame).PackagingDetails;
+
+                function sortAlphabet(x, y) {
+                    if (x.ItemName < y.ItemName) { return -1; }
+                    if (x.ItemName > y.ItemName) { return 1; }
+                    return 0;
+                }
+
+                let ItemList = raw_item_list.sort(sortAlphabet);
+
+
                 for (var i in ItemList) {
                     ItemList[i].No = parseInt(i) + 1
                 }
@@ -2752,9 +2854,12 @@ class SetPackagingBody extends Component {
                 format: [173.64, 260.477]
             })
 
+            var name_file = `${this.state.print["PickNo"]}_${this.state.print["PackageName"]}.pdf`
+
+
             doc.html(document.querySelector("#print2"), {
                 callback: function (pdf) {
-                    pdf.save('myfile.pdf');
+                    pdf.save(name_file);
                 }
             })
         }
@@ -2774,7 +2879,8 @@ class SetPackagingBody extends Component {
         return <div>
             <a
                 style={{
-                    fontWeight: '400'
+                    fontWeight: '400',
+                    cursor: "pointer"
                 }}
                 onClick={() => {
                     //munculin tabel barang
@@ -2857,7 +2963,8 @@ class SetPackagingBody extends Component {
                         marginRight: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={
                         () => {
@@ -2877,7 +2984,8 @@ class SetPackagingBody extends Component {
                         marginRight: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={
                         () => {
@@ -2965,7 +3073,8 @@ class SetPackagingBody extends Component {
                         bottom: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={() => {
                         this.setState({ selectedPrint: data.values[1] }, () => {
@@ -2992,7 +3101,8 @@ class SetPackagingBody extends Component {
                         marginRight: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={
                         () => {
@@ -3012,7 +3122,8 @@ class SetPackagingBody extends Component {
                         marginRight: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={
                         () => {
@@ -3063,7 +3174,8 @@ class SetPackagingBody extends Component {
                         marginRight: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={
                         () => {
@@ -3085,7 +3197,8 @@ class SetPackagingBody extends Component {
                         marginRight: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={
                         () => {
@@ -3173,7 +3286,8 @@ class SetPackagingBody extends Component {
                         marginRight: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={
                         () => {
@@ -3195,7 +3309,8 @@ class SetPackagingBody extends Component {
                         marginRight: "10px",
                         color: "#4b85bb",
                         fontWeight: "400",
-                        pointerEvents: "auto"
+                        pointerEvents: "auto",
+                        cursor: "pointer"
                     }}
                     onClick={
                         () => {
@@ -3304,6 +3419,9 @@ class SetPackagingBody extends Component {
             const stat = await res.status;
             const data = await res.json();
 
+            console.log('window')
+            console.log(window.localStorage)
+
             if (cb) {
                 cb(stat, data)
             }
@@ -3322,17 +3440,28 @@ class SetPackagingBody extends Component {
             try {
                 if (stat >= 200 && stat <= 300) {
                     //siapin data validasi buat ditampilin ke user
-                    let ValidArr = [];
+                    let raw_data = [];
 
                     for (var i in data.PicklistDetails) {
-                        ValidArr.push({
+                        raw_data.push({
                             "Barcode": data.PicklistDetails[i].Barcode,
                             "ItemCode": data.PicklistDetails[i].ItemCode,
                             "ItemName": data.PicklistDetails[i].ItemName,
                             "PickQty": data.PicklistDetails[i].PickQty,
-                            "No": parseInt(i) + 1,
                             "RegisteredQty": 0
                         })
+                    }
+
+                    function sortAlphabet(x, y) {
+                        if (x.ItemName < y.ItemName) { return -1; }
+                        if (x.ItemName > y.ItemName) { return 1; }
+                        return 0;
+                    }
+
+                    var ValidArr = raw_data.sort(sortAlphabet);
+
+                    for (var i in ValidArr) {
+                        ValidArr[i].No = parseInt(i) + 1
                     }
 
                     //masukin validasi data barang ke local storage
@@ -3357,8 +3486,10 @@ class SetPackagingBody extends Component {
                     const status = await res.status;
                     const info = await res.json();
 
+                    console.log('target')
                     console.log(status)
                     console.log(info)
+                    console.log(info.Packagings)
 
                     if (status >= 200 && status <= 300) {
                         if (info.Packagings.length == 0) {
@@ -3487,7 +3618,23 @@ class SetPackagingBody extends Component {
                                 }
 
                             }
-                            console.log(DataValidasi)
+                            var raw_package = JSON.parse(window.localStorage.getItem('PackageList'));
+
+                            function sortAlphabet(x, y) {
+                                if (x.PackagingName < y.PackagingName) { return -1; }
+                                if (x.PackagingName > y.PackagingName) { return 1; }
+                                return 0;
+                            }
+
+                            var package_list = raw_package.sort(sortAlphabet);
+
+                            console.log('fff')
+                            console.log(package_list)
+
+                            for (var i in package_list) {
+                                package_list[i].No = parseInt(i) + 1
+                            }
+
 
                             let stringValidData = JSON.stringify(DataValidasi);
                             localStorage.setItem('ValidList', stringValidData);
@@ -3501,7 +3648,7 @@ class SetPackagingBody extends Component {
                                 isLoading: false,
                                 dataGridPackage: new DataSource({
                                     store: new ArrayStore({
-                                        data: JSON.parse(window.localStorage.getItem('PackageList'))
+                                        data: package_list
                                     })
                                 })
                             })
@@ -6322,7 +6469,7 @@ class SetPackagingBody extends Component {
     }
 
     //for print only
-    renderTable2 = () => {
+    renderTable_print = () => {
         const item_list = this.state.print["ItemList"];
         const item_list_len = this.state.print["ItemList"].length;
 
@@ -6401,15 +6548,31 @@ class SetPackagingBody extends Component {
                         >
                             CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
                         </p>
-                        <div>
+
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                marginTop: "-15px"
+                            }}
+                        >
                             <p
                                 style={{
                                     fontSize: "7px",
-                                    fontWeight: "800",
-                                    marginTop: "-7.5px"
+                                    fontWeight: "900"
                                 }}
                             >
-                                NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
+                                NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                            </p>
+
+                            <p
+                                style={{
+                                    fontSize: "7px",
+                                    fontWeight: "900",
+
+                                }}
+                            >
+                                {this.state.print.Notice.toUpperCase()}
                             </p>
                         </div>
 
@@ -6463,9 +6626,18 @@ class SetPackagingBody extends Component {
                                         fontWeight: "800",
                                         border: "0.5px solid black",
                                         borderCollapse: "collapse",
+                                        width: "15px",
                                     }}
                                 >
-                                    NO
+                                    <div
+                                        style={{
+                                            width: "15px",
+                                            overflow: "hidden",
+                                            height: "10px"
+                                        }}
+                                    >
+                                        NO
+                                    </div>
                                 </th>
 
                                 <th
@@ -6474,9 +6646,18 @@ class SetPackagingBody extends Component {
                                         fontWeight: "800",
                                         border: "0.5px solid black",
                                         borderCollapse: "collapse",
+                                        width: "190px"
                                     }}
                                 >
-                                    NAMA BARANG
+                                    <div
+                                        style={{
+                                            width: "190px",
+                                            overflow: "hidden",
+                                            height: "10px"
+                                        }}
+                                    >
+                                        NAMA BARANG
+                                    </div>
                                 </th>
 
                                 <th
@@ -6485,9 +6666,18 @@ class SetPackagingBody extends Component {
                                         fontWeight: "800",
                                         border: "0.5px solid black",
                                         borderCollapse: "collapse",
+                                        width: "32.5px"
                                     }}
                                 >
-                                    QTY PCS
+                                    <div
+                                        style={{
+                                            width: "32.5px",
+                                            overflow: "hidden",
+                                            height: "10px"
+                                        }}
+                                    >
+                                        QTY PCS
+                                    </div>
                                 </th>
 
                             </tr>
@@ -6498,16 +6688,41 @@ class SetPackagingBody extends Component {
                                 if (element.ItemName != "empty") {
                                     return (
                                         <tr>
-                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print.ItemList[y].No}
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center", }}>
+                                                <div
+                                                    style={{
+                                                        width: "15px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print.ItemList[y].No}
+                                                </div>
                                             </td>
 
-                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                {this.state.print.ItemList[y].ItemName}
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left", }}>
+                                                <div
+                                                    style={{
+                                                        width: "190px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print.ItemList[y].ItemName}
+                                                </div>
                                             </td>
 
-                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print.ItemList[y].Qty}
+                                            <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center", }}>
+                                                <div
+                                                    style={{
+                                                        width: "32.5px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print.ItemList[y].Qty}
+                                                </div>
+
                                             </td>
                                         </tr>
                                     )
@@ -6560,7 +6775,7 @@ class SetPackagingBody extends Component {
                                     marginTop: '-8px'
                                 }}
                             >
-                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
+                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("DD/MM/YYYY")}
                             </p>
                         </div>
 
@@ -6662,15 +6877,31 @@ class SetPackagingBody extends Component {
                             >
                                 CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
                             </p>
-                            <div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    marginTop: "-15px"
+                                }}
+                            >
                                 <p
                                     style={{
                                         fontSize: "7px",
-                                        fontWeight: "800",
-                                        marginTop: "-7.5px"
+                                        fontWeight: "900"
                                     }}
                                 >
-                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                </p>
+
+                                <p
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "900",
+
+                                    }}
+                                >
+                                    {this.state.print.Notice.toUpperCase()}
                                 </p>
                             </div>
 
@@ -6724,9 +6955,18 @@ class SetPackagingBody extends Component {
                                             fontWeight: "800",
                                             border: "0.5px solid black",
                                             borderCollapse: "collapse",
+                                            width: "15px",
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "15px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -6735,9 +6975,18 @@ class SetPackagingBody extends Component {
                                             fontWeight: "800",
                                             border: "0.5px solid black",
                                             borderCollapse: "collapse",
+                                            width: "190px",
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "190px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -6746,9 +6995,18 @@ class SetPackagingBody extends Component {
                                             fontWeight: "800",
                                             border: "0.5px solid black",
                                             borderCollapse: "collapse",
+                                            width: "32.5px",
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "32.5px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
                                 </tr>
@@ -6758,15 +7016,39 @@ class SetPackagingBody extends Component {
                                     return (
                                         <tr>
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                <div
+                                                    style={{
+                                                        width: "15px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                <div
+                                                    style={{
+                                                        width: "190px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                <div
+                                                    style={{
+                                                        width: "32.5px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                </div>
                                             </td>
                                         </tr>
                                     )
@@ -6814,7 +7096,7 @@ class SetPackagingBody extends Component {
                                         marginTop: '-8px'
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("DD/MM/YYYY")}
                                 </p>
                             </div>
 
@@ -6918,15 +7200,30 @@ class SetPackagingBody extends Component {
                             >
                                 CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
                             </p>
-                            <div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    marginTop: "-15px"
+                                }}
+                            >
                                 <p
                                     style={{
                                         fontSize: "7px",
-                                        fontWeight: "800",
-                                        marginTop: "-7.5px"
+                                        fontWeight: "900"
                                     }}
                                 >
-                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}v
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                </p>
+
+                                <p
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "900",
+
+                                    }}
+                                >
+                                    {this.state.print.Notice.toUpperCase()}
                                 </p>
                             </div>
 
@@ -6980,9 +7277,18 @@ class SetPackagingBody extends Component {
                                             fontWeight: "800",
                                             border: "0.5px solid black",
                                             borderCollapse: "collapse",
+                                            width: "15px",
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "15px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -6991,9 +7297,18 @@ class SetPackagingBody extends Component {
                                             fontWeight: "800",
                                             border: "0.5px solid black",
                                             borderCollapse: "collapse",
+                                            width: "190px",
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "190px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -7002,9 +7317,18 @@ class SetPackagingBody extends Component {
                                             fontWeight: "800",
                                             border: "0.5px solid black",
                                             borderCollapse: "collapse",
+                                            width: "32.5px",
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "32.5px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
                                 </tr>
@@ -7014,15 +7338,40 @@ class SetPackagingBody extends Component {
                                     return (
                                         <tr>
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                <div
+                                                    style={{
+                                                        width: "15px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                <div
+                                                    style={{
+                                                        width: "190px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                <div
+                                                    style={{
+                                                        width: "32.5px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                </div>
+
                                             </td>
                                         </tr>
                                     )
@@ -7072,7 +7421,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "15px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -7083,7 +7440,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "190px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -7094,7 +7459,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "32.5px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
                                 </tr>
@@ -7104,15 +7477,39 @@ class SetPackagingBody extends Component {
                                     return (
                                         <tr>
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(6, item_list_len)[y].No}
+                                                <div
+                                                    style={{
+                                                        width: "15px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(6, item_list_len)[y].No}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                {this.state.print["ItemList"].slice(6, item_list_len)[y].ItemName}
+                                                <div
+                                                    style={{
+                                                        width: "190px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(6, item_list_len)[y].ItemName}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(6, item_list_len)[y].Qty}
+                                                <div
+                                                    style={{
+                                                        width: "32.5px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(6, item_list_len)[y].Qty}
+                                                </div>
                                             </td>
                                         </tr>
                                     )
@@ -7153,7 +7550,7 @@ class SetPackagingBody extends Component {
                                         marginTop: '-8px'
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("DD/MM/YYYY")}
                                 </p>
                             </div>
 
@@ -7255,15 +7652,30 @@ class SetPackagingBody extends Component {
                             >
                                 CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
                             </p>
-                            <div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    marginTop: "-15px"
+                                }}
+                            >
                                 <p
                                     style={{
                                         fontSize: "7px",
-                                        fontWeight: "800",
-                                        marginTop: "-7.5px"
+                                        fontWeight: "900"
                                     }}
                                 >
-                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
+                                    NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                </p>
+
+                                <p
+                                    style={{
+                                        fontSize: "7px",
+                                        fontWeight: "900",
+
+                                    }}
+                                >
+                                    {this.state.print.Notice.toUpperCase()}
                                 </p>
                             </div>
 
@@ -7319,7 +7731,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "15px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -7330,7 +7750,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "190px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -7341,7 +7769,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "32.5px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
                                 </tr>
@@ -7351,15 +7787,39 @@ class SetPackagingBody extends Component {
                                     return (
                                         <tr>
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                <div
+                                                    style={{
+                                                        width: "15px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                <div
+                                                    style={{
+                                                        width: "190px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                <div
+                                                    style={{
+                                                        width: "32.5px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                </div>
                                             </td>
                                         </tr>
                                     )
@@ -7409,7 +7869,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "15px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -7420,7 +7888,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "190px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -7431,7 +7907,15 @@ class SetPackagingBody extends Component {
                                             borderCollapse: "collapse",
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "32.5px",
+                                                overflow: "hidden",
+                                                height: "10px"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
                                 </tr>
@@ -7441,15 +7925,39 @@ class SetPackagingBody extends Component {
                                     return (
                                         <tr>
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(6, item_list_len)[y].No}
+                                                <div
+                                                    style={{
+                                                        width: "15px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(6, item_list_len)[y].No}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                {this.state.print["ItemList"].slice(6, item_list_len)[y].ItemName}
+                                                <div
+                                                    style={{
+                                                        width: "190px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(6, item_list_len)[y].ItemName}
+                                                </div>
                                             </td>
 
                                             <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                {this.state.print["ItemList"].slice(6, item_list_len)[y].Qty}
+                                                <div
+                                                    style={{
+                                                        width: "32.5px",
+                                                        overflow: "hidden",
+                                                        height: "10px"
+                                                    }}
+                                                >
+                                                    {this.state.print["ItemList"].slice(6, item_list_len)[y].Qty}
+                                                </div>
                                             </td>
                                         </tr>
                                     )
@@ -7492,7 +8000,7 @@ class SetPackagingBody extends Component {
                                     marginTop: '-8px'
                                 }}
                             >
-                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
+                                TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("DD/MM/YYYY")}
                             </p>
                         </div>
 
@@ -7649,15 +8157,30 @@ class SetPackagingBody extends Component {
                                 >
                                     CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
                                 </p>
-                                <div>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "-15px"
+                                    }}
+                                >
                                     <p
                                         style={{
                                             fontSize: "7px",
-                                            fontWeight: "800",
-                                            marginTop: "-7.5px"
+                                            fontWeight: "900"
                                         }}
                                     >
-                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                    </p>
+
+                                    <p
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "900",
+
+                                        }}
+                                    >
+                                        {this.state.print.Notice.toUpperCase()}
                                     </p>
                                 </div>
 
@@ -7713,7 +8236,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            NO
+                                            <div
+                                                style={{
+                                                    width: "15px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                NO
+                                            </div>
                                         </th>
 
                                         <th
@@ -7724,7 +8255,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            NAMA BARANG
+                                            <div
+                                                style={{
+                                                    width: "190px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                NAMA BARANG
+                                            </div>
                                         </th>
 
                                         <th
@@ -7735,7 +8274,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            QTY PCS
+                                            <div
+                                                style={{
+                                                    width: "32.5px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                QTY PCS
+                                            </div>
                                         </th>
 
                                     </tr>
@@ -7745,15 +8292,39 @@ class SetPackagingBody extends Component {
                                         return (
                                             <tr>
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                    {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                    <div
+                                                        style={{
+                                                            width: "15px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                    </div>
                                                 </td>
 
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                    {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "190px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                    </div>
                                                 </td>
 
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                    {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "32.5px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                    </div>
                                                 </td>
                                             </tr>
                                         )
@@ -7805,7 +8376,15 @@ class SetPackagingBody extends Component {
                                                         borderCollapse: "collapse",
                                                     }}
                                                 >
-                                                    NO
+                                                    <div
+                                                        style={{
+                                                            width: "15px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        NO
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -7816,7 +8395,15 @@ class SetPackagingBody extends Component {
                                                         borderCollapse: "collapse",
                                                     }}
                                                 >
-                                                    NAMA BARANG
+                                                    <div
+                                                        style={{
+                                                            width: "190px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        NAMA BARANG
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -7827,7 +8414,15 @@ class SetPackagingBody extends Component {
                                                         borderCollapse: "collapse",
                                                     }}
                                                 >
-                                                    QTY PCS
+                                                    <div
+                                                        style={{
+                                                            width: "32.5px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        QTY PCS
+                                                    </div>
                                                 </th>
 
                                             </tr>
@@ -7836,15 +8431,39 @@ class SetPackagingBody extends Component {
                                                 return (
                                                     <tr>
                                                         <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                            {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                            <div
+                                                                style={{
+                                                                    width: "15px",
+                                                                    overflow: "hidden",
+                                                                    height: "10px"
+                                                                }}
+                                                            >
+                                                                {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                            </div>
                                                         </td>
 
                                                         <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                            {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                            <div
+                                                                style={{
+                                                                    width: "190px",
+                                                                    overflow: "hidden",
+                                                                    height: "10px"
+                                                                }}
+                                                            >
+                                                                {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                            </div>
                                                         </td>
 
                                                         <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                            {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                            <div
+                                                                style={{
+                                                                    width: "32.5px",
+                                                                    overflow: "hidden",
+                                                                    height: "10px"
+                                                                }}
+                                                            >
+                                                                {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 )
@@ -7889,7 +8508,7 @@ class SetPackagingBody extends Component {
                                         marginTop: '-8px'
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("DD/MM/YYYY")}
                                 </p>
                             </div>
 
@@ -8043,15 +8662,30 @@ class SetPackagingBody extends Component {
                                 >
                                     CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
                                 </p>
-                                <div>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "-15px"
+                                    }}
+                                >
                                     <p
                                         style={{
                                             fontSize: "7px",
-                                            fontWeight: "800",
-                                            marginTop: "-7.5px"
+                                            fontWeight: "900"
                                         }}
                                     >
-                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.Notice.toUpperCase()}
+                                        NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                    </p>
+
+                                    <p
+                                        style={{
+                                            fontSize: "7px",
+                                            fontWeight: "900",
+
+                                        }}
+                                    >
+                                        {this.state.print.Notice.toUpperCase()}
                                     </p>
                                 </div>
 
@@ -8107,7 +8741,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            NO
+                                            <div
+                                                style={{
+                                                    width: "15px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                NO
+                                            </div>
                                         </th>
 
                                         <th
@@ -8118,7 +8760,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            NAMA BARANG
+                                            <div
+                                                style={{
+                                                    width: "190px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                NAMA BARANG
+                                            </div>
                                         </th>
 
                                         <th
@@ -8129,7 +8779,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            QTY PCS
+                                            <div
+                                                style={{
+                                                    width: "32.5px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                QTY PCS
+                                            </div>
                                         </th>
 
                                     </tr>
@@ -8139,15 +8797,39 @@ class SetPackagingBody extends Component {
                                         return (
                                             <tr>
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                    {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                    <div
+                                                        style={{
+                                                            width: "15px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {this.state.print["ItemList"].slice(0, 6)[y].No}
+                                                    </div>
                                                 </td>
 
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                    {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "190px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {this.state.print["ItemList"].slice(0, 6)[y].ItemName}
+                                                    </div>
                                                 </td>
 
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                    {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "32.5px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {this.state.print["ItemList"].slice(0, 6)[y].Qty}
+                                                    </div>
                                                 </td>
                                             </tr>
                                         )
@@ -8200,7 +8882,15 @@ class SetPackagingBody extends Component {
                                                         borderCollapse: "collapse",
                                                     }}
                                                 >
-                                                    NO
+                                                    <div
+                                                        style={{
+                                                            width: "15px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        NO
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -8211,7 +8901,15 @@ class SetPackagingBody extends Component {
                                                         borderCollapse: "collapse",
                                                     }}
                                                 >
-                                                    NAMA BARANG
+                                                    <div
+                                                        style={{
+                                                            width: "190px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        NAMA BARANG
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -8222,7 +8920,15 @@ class SetPackagingBody extends Component {
                                                         borderCollapse: "collapse",
                                                     }}
                                                 >
-                                                    QTY PCS
+                                                    <div
+                                                        style={{
+                                                            width: "32.5px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        QTY PCS
+                                                    </div>
                                                 </th>
 
                                             </tr>
@@ -8231,15 +8937,39 @@ class SetPackagingBody extends Component {
                                                 return (
                                                     <tr>
                                                         <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                            {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                            <div
+                                                                style={{
+                                                                    width: "15px",
+                                                                    overflow: "hidden",
+                                                                    height: "10px"
+                                                                }}
+                                                            >
+                                                                {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                            </div>
                                                         </td>
 
                                                         <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                            {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                            <div
+                                                                style={{
+                                                                    width: "190px",
+                                                                    overflow: "hidden",
+                                                                    height: "10px"
+                                                                }}
+                                                            >
+                                                                {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                            </div>
                                                         </td>
 
                                                         <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                            {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                            <div
+                                                                style={{
+                                                                    width: "32.5px",
+                                                                    overflow: "hidden",
+                                                                    height: "10px"
+                                                                }}
+                                                            >
+                                                                {this.state.print["ItemList"].slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 )
@@ -8291,7 +9021,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            NO
+                                            <div
+                                                style={{
+                                                    width: "15px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                NO
+                                            </div>
                                         </th>
 
                                         <th
@@ -8302,7 +9040,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            NAMA BARANG
+                                            <div
+                                                style={{
+                                                    width: "190px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                NAMA BARANG
+                                            </div>
                                         </th>
 
                                         <th
@@ -8313,7 +9059,15 @@ class SetPackagingBody extends Component {
                                                 borderCollapse: "collapse",
                                             }}
                                         >
-                                            QTY PCS
+                                            <div
+                                                style={{
+                                                    width: "32.5px",
+                                                    overflow: "hidden",
+                                                    height: "10px"
+                                                }}
+                                            >
+                                                QTY PCS
+                                            </div>
                                         </th>
 
                                     </tr>
@@ -8323,15 +9077,39 @@ class SetPackagingBody extends Component {
                                         return (
                                             <tr>
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].No}
+                                                    <div
+                                                        style={{
+                                                            width: "15px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].No}
+                                                    </div>
                                                 </td>
 
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "left" }}>
-                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "190px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].ItemName}
+                                                    </div>
                                                 </td>
 
                                                 <td height={8} style={{ fontSize: "6.5px", fontWeight: "800", border: "0.25px solid black", textAlign: "center" }}>
-                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "32.5px",
+                                                            overflow: "hidden",
+                                                            height: "10px"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].Qty}
+                                                    </div>
                                                 </td>
                                             </tr>
                                         )
@@ -8374,7 +9152,7 @@ class SetPackagingBody extends Component {
                                         marginTop: '-8px'
                                     }}
                                 >
-                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("MM/DD/YYYY")}
+                                    TANGGAL&nbsp;PACKING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{moment(new Date()).format("DD/MM/YYYY")}
                                 </p>
                             </div>
 
@@ -8460,8 +9238,16 @@ class SetPackagingBody extends Component {
         this.setState({ displayPrint4: data, selectedDropDown1: id })
     }
 
+    delete_certain_data = () => {
+        window.localStorage.removeItem('AbsEntry');
+        window.localStorage.removeItem('PackageList');
+        window.localStorage.removeItem('TransNo');
+        window.localStorage.removeItem('ValidList');
+    }
+
 
     componentDidMount() {
+        this.delete_certain_data();
         this.getValidAndPackage();
 
         window.addEventListener("popstate", event => {
@@ -8666,7 +9452,7 @@ class SetPackagingBody extends Component {
                         <Pager
                             showNavigationButtons={true}
                             showPageSizeSelector={true}
-                            allowedPageSizes={this.state.allowedPageSizes}
+                            allowedPageSizes={this.state.allowedPageSizes1}
                             showInfo={true}
                             infoText="Page {0}. Total: {1} ({2} items)"
                         />
@@ -8742,19 +9528,39 @@ class SetPackagingBody extends Component {
 
                             <TextBox
                                 placeholder="Input Scan Item Here"
+                                className='text-scan'
                                 width="250px"
                                 height="40px"
                                 style={{
                                     marginLeft: "20px",
                                     marginTop: "20px",
                                     borderRadius: "10px",
-                                    beforeunloadgroundColor: "rgba(229, 238, 248, 1)",
-                                    borderColor: "rgba(0, 86, 184, 1)"
+                                    backgroundColor: this.state.form_bg_color,
+                                    borderColor: this.state.form_border_color,
+                                    borderWidth: this.state.form_border_width
                                 }}
                                 disabled={this.state.textBoxStat}
                                 value={this.state.scanItem}
                                 onValueChange={(y) => { this.setState({ scanItem: y }) }}
-                                onEnterKey={this.scanBarcode}
+                                onEnterKey={this.scanItemCode}
+                                onFocusIn={
+                                    () => {
+                                        this.setState({
+                                            form_bg_color: "rgba(229, 238, 248, 1)",
+                                            form_border_color: "yellowgreen",
+                                            form_border_width: 3
+                                        })
+                                    }
+                                }
+                                onFocusOut={
+                                    () => {
+                                        this.setState({
+                                            form_bg_color: "rgba(229, 238, 248, 1)",
+                                            form_border_color: "rgba(0, 86, 184, 1)",
+                                            form_border_width: 1
+                                        })
+                                    }
+                                }
                             />
                         </div>
 
@@ -9447,8 +10253,7 @@ class SetPackagingBody extends Component {
                                     style={{
                                         marginLeft: "10px"
                                     }}
-                                    maxLength={1}
-                                    value={""}
+                                    value={this.state.PackageName}
                                 />
                             </div>
 
@@ -10348,7 +11153,11 @@ class SetPackagingBody extends Component {
                         width={587}
                         height={197}
                     >
-                        <p className="PopUpSubmitSuccess-Text">Proses Packing sudah berhasil</p>
+                        <p
+                            className="PopUpSubmitSuccess-Text"
+                        >
+                            Proses Packing sudah berhasil
+                        </p>
 
                         <div className='PopUpSubmitSuccess-Btn'>
                             <Button
@@ -10378,7 +11187,7 @@ class SetPackagingBody extends Component {
                         width={"300px"}
                         height={"300px"}
                     >
-                        {this.renderTable2()}
+                        {this.renderTable_print()}
 
                         <div
                             style={{
@@ -10464,7 +11273,7 @@ class SetPackagingBody extends Component {
                                 onValueChange={(y) => { this.setState({ superUserPass: y }) }}
                                 width={550}
                                 mode={'password'}
-                                value={""}
+                                value={this.state.superUserPass}
                             />
                         </div>
 
@@ -10536,7 +11345,7 @@ class SetPackagingBody extends Component {
                                 onValueChange={(y) => { this.setState({ superUserPass: y }) }}
                                 width={550}
                                 mode={'password'}
-                                value={""}
+                                value={this.state.superUserPass}
                             />
                         </div>
 
@@ -10608,7 +11417,7 @@ class SetPackagingBody extends Component {
                                 onValueChange={(y) => { this.setState({ superUserPass: y }) }}
                                 width={550}
                                 mode={'password'}
-                                value={""}
+                                value={this.state.superUserPass}
                             />
                         </div>
 
@@ -10680,7 +11489,7 @@ class SetPackagingBody extends Component {
                                 onValueChange={(y) => { this.setState({ superUserPass: y }) }}
                                 width={550}
                                 mode={'password'}
-                                value={""}
+                                value={this.state.superUserPass}
                             />
                         </div>
 
@@ -10752,7 +11561,7 @@ class SetPackagingBody extends Component {
                                 onValueChange={(y) => { this.setState({ superUserPass: y }) }}
                                 width={550}
                                 mode={'password'}
-                                value={""}
+                                value={this.state.superUserPass}
                             />
                         </div>
 

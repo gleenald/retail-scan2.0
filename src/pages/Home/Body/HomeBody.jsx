@@ -1077,6 +1077,9 @@ class HomeBody extends Component {
                         }),
                         isLoading: false
                     })
+
+                    console.log('home window')
+                    console.log(window.localStorage)
                 }
                 if (stat >= 400 && stat <= 500) {
                     this.setState({

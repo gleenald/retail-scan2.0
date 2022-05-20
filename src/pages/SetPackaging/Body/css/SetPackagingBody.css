@@ -87,6 +87,16 @@
 
 }
 
+.Table2-CTR .text-scan {
+    background-color: rgba(229, 238, 248, 1);
+    border-color: rgba(0, 86, 184, 1);
+}
+
+.Table2-CTR .text-scan:focus,
+.Table2-CTR .text-scan:active {
+    border-color: red;
+}
+
 .Table2-TitleGroup {
     display: flex;
     flex-direction: row;
