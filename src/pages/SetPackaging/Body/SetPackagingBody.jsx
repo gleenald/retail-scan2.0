@@ -302,7 +302,8 @@ class SetPackagingBody extends Component {
     disableAddNewPackage = () => {
         try {
             this.setState({
-                isAddNewPackage: false
+                isAddNewPackage: false,
+                PackageName: ""
             })
         }
         catch (err) {
@@ -317,7 +318,8 @@ class SetPackagingBody extends Component {
     enableAddNewPackage = () => {
         try {
             this.setState({
-                isAddNewPackage: true
+                isAddNewPackage: true,
+                PackageName: ""
             })
         }
         catch (err) {
@@ -3873,10 +3875,19 @@ class SetPackagingBody extends Component {
                                             fontWeight: "800",
                                             border: "2px solid black",
                                             borderLeft: "0px",
-                                            height: "3.3vh"
+                                            height: "3.3vh",
+                                            width: "50px"
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "50px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -3887,7 +3898,15 @@ class SetPackagingBody extends Component {
                                             height: "3.3vh"
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "600px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -3899,7 +3918,15 @@ class SetPackagingBody extends Component {
                                             height: "3.3vh"
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "80px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
 
@@ -3965,7 +3992,15 @@ class SetPackagingBody extends Component {
                                                         borderLeft: "0px",
                                                     }}
                                                 >
-                                                    {item_list[y].No}
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list[y].No}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -3977,7 +4012,15 @@ class SetPackagingBody extends Component {
                                                         height: "3.3vh",
                                                     }}
                                                 >
-                                                    {item_list[y].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list[y].ItemName}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -3988,7 +4031,15 @@ class SetPackagingBody extends Component {
                                                         fontWeight: "800"
                                                     }}
                                                 >
-                                                    {item_list[y].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list[y].Qty}
+                                                    </div>
                                                 </th>
                                             </tr>
                                         )
@@ -4205,7 +4256,6 @@ class SetPackagingBody extends Component {
                                     width: "750px",
                                     borderCollapse: "collapse",
                                     width: "50vw",
-                                    //borderBottom: "2px solid black"
                                 }}
                             >
                                 <tr>
@@ -4219,7 +4269,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "50px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -4230,7 +4288,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "600px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -4242,7 +4308,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "80px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
 
@@ -4306,10 +4380,17 @@ class SetPackagingBody extends Component {
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         height: "2.82vh",
-                                                        //borderBottom: "0px"
                                                     }}
                                                 >
-                                                    {item_list[y].No}
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list[y].No}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -4319,10 +4400,17 @@ class SetPackagingBody extends Component {
                                                         fontWeight: "800",
                                                         textAlign: "left",
                                                         height: "2.82vh",
-                                                        //borderBottom: "0px"
                                                     }}
                                                 >
-                                                    {item_list[y].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list[y].ItemName}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -4331,11 +4419,18 @@ class SetPackagingBody extends Component {
                                                         borderRight: "0px",
                                                         fontSize: 14,
                                                         fontWeight: "800",
-                                                        //borderBottom: "0px",
                                                         height: "2.82vh",
                                                     }}
                                                 >
-                                                    {item_list[y].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list[y].Qty}
+                                                    </div>
                                                 </th>
                                             </tr>
                                         )
@@ -4560,8 +4655,7 @@ class SetPackagingBody extends Component {
                             <table
                                 style={{
                                     width: "50vw",
-                                    borderCollapse: "collapse",
-                                    //borderBottom: "2px solid black"
+                                    borderCollapse: "collapse"
                                 }}
                             >
                                 <tr>
@@ -4575,7 +4669,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "50px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -4586,7 +4688,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "600px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -4598,7 +4708,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "80px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
 
@@ -4664,7 +4782,15 @@ class SetPackagingBody extends Component {
                                                         borderLeft: "0px",
                                                     }}
                                                 >
-                                                    {itemList1[y].No}
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList1[y].No}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -4677,7 +4803,15 @@ class SetPackagingBody extends Component {
 
                                                     }}
                                                 >
-                                                    {itemList1[y].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList1[y].ItemName}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -4689,7 +4823,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.82vh",
                                                     }}
                                                 >
-                                                    {itemList1[y].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList1[y].Qty}
+                                                    </div>
                                                 </th>
                                             </tr>
                                         )
@@ -4729,7 +4871,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "50px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -4741,7 +4891,15 @@ class SetPackagingBody extends Component {
                                             borderTop: "0px",
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "600px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -4754,7 +4912,15 @@ class SetPackagingBody extends Component {
                                             borderTop: "0px",
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "80px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
                                 </tr>
                                 {itemList2.map((element, y, z) => {
@@ -4770,7 +4936,15 @@ class SetPackagingBody extends Component {
                                                         //borderBottom: "0px"
                                                     }}
                                                 >
-                                                    {itemList2[y].No}
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList2[y].No}
+                                                    </div>
                                                 </th>
                                                 <th
                                                     style={{
@@ -4779,10 +4953,17 @@ class SetPackagingBody extends Component {
                                                         fontWeight: "800",
                                                         textAlign: "left",
                                                         height: "2.82vh",
-                                                        //borderBottom: "0px"
                                                     }}
                                                 >
-                                                    {itemList2[y].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList2[y].ItemName}
+                                                    </div>
                                                 </th>
                                                 <th
                                                     style={{
@@ -4793,7 +4974,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.82vh",
                                                     }}
                                                 >
-                                                    {itemList2[y].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList2[y].Qty}
+                                                    </div>
                                                 </th>
                                             </tr>
                                         )
@@ -5052,7 +5241,6 @@ class SetPackagingBody extends Component {
                                 style={{
                                     width: "50vw",
                                     borderCollapse: "collapse",
-                                    //borderBottom: "2px solid black"
                                 }}
                             >
                                 <tr>
@@ -5066,7 +5254,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "50px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -5077,7 +5273,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "600px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -5089,7 +5293,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "80px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
 
 
@@ -5152,7 +5364,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.7vh"
                                                     }}
                                                 >
-                                                    {itemList1[y].No}
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList1[y].No}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -5164,7 +5384,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.7vh"
                                                     }}
                                                 >
-                                                    {itemList1[y].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList1[y].ItemName}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -5176,7 +5404,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.7vh"
                                                     }}
                                                 >
-                                                    {itemList1[y].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {itemList1[y].Qty}
+                                                    </div>
                                                 </th>
                                             </tr>
                                         )
@@ -5215,7 +5451,15 @@ class SetPackagingBody extends Component {
                                             height: "3.0vh"
                                         }}
                                     >
-                                        NO
+                                        <div
+                                            style={{
+                                                width: "50px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NO
+                                        </div>
                                     </th>
 
                                     <th
@@ -5227,7 +5471,15 @@ class SetPackagingBody extends Component {
                                             borderTop: "0px",
                                         }}
                                     >
-                                        NAMA BARANG
+                                        <div
+                                            style={{
+                                                width: "600px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            NAMA BARANG
+                                        </div>
                                     </th>
 
                                     <th
@@ -5240,7 +5492,15 @@ class SetPackagingBody extends Component {
                                             borderTop: "0px",
                                         }}
                                     >
-                                        QTY PCS
+                                        <div
+                                            style={{
+                                                width: "80px",
+                                                overflow: "hidden",
+                                                height: "3.3vh"
+                                            }}
+                                        >
+                                            QTY PCS
+                                        </div>
                                     </th>
                                 </tr>
 
@@ -5252,11 +5512,18 @@ class SetPackagingBody extends Component {
                                                     border: "2px solid black",
                                                     fontSize: 14,
                                                     fontWeight: "800",
-                                                    height: "2.7vh",
-                                                    //borderBottom: "0px"
+                                                    height: "2.7vh"
                                                 }}
                                             >
-                                                {itemList2[y].No}
+                                                <div
+                                                    style={{
+                                                        width: "50px",
+                                                        overflow: "hidden",
+                                                        height: "3.3vh"
+                                                    }}
+                                                >
+                                                    {itemList2[y].No}
+                                                </div>
                                             </th>
                                             <th
                                                 style={{
@@ -5264,11 +5531,18 @@ class SetPackagingBody extends Component {
                                                     fontSize: 14,
                                                     fontWeight: "800",
                                                     textAlign: "left",
-                                                    height: "2.82vh",
-                                                    //borderBottom: "0px"
+                                                    height: "2.82vh"
                                                 }}
                                             >
-                                                {itemList2[y].ItemName}
+                                                <div
+                                                    style={{
+                                                        width: "600px",
+                                                        overflow: "hidden",
+                                                        height: "3.3vh"
+                                                    }}
+                                                >
+                                                    {itemList2[y].ItemName}
+                                                </div>
                                             </th>
                                             <th
                                                 style={{
@@ -5279,7 +5553,15 @@ class SetPackagingBody extends Component {
                                                     height: "2.82vh",
                                                 }}
                                             >
-                                                {itemList2[y].Qty}
+                                                <div
+                                                    style={{
+                                                        width: "80px",
+                                                        overflow: "hidden",
+                                                        height: "3.3vh"
+                                                    }}
+                                                >
+                                                    {itemList2[y].Qty}
+                                                </div>
                                             </th>
                                         </tr>
                                     )
@@ -5567,7 +5849,15 @@ class SetPackagingBody extends Component {
                                                 height: "3.0vh"
                                             }}
                                         >
-                                            NO
+                                            <div
+                                                style={{
+                                                    width: "50px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                NO
+                                            </div>
                                         </th>
 
                                         <th
@@ -5578,7 +5868,15 @@ class SetPackagingBody extends Component {
                                                 height: "3.0vh"
                                             }}
                                         >
-                                            NAMA BARANG
+                                            <div
+                                                style={{
+                                                    width: "600px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                NAMA BARANG
+                                            </div>
                                         </th>
 
                                         <th
@@ -5590,7 +5888,15 @@ class SetPackagingBody extends Component {
                                                 height: "3.0vh"
                                             }}
                                         >
-                                            QTY PCS
+                                            <div
+                                                style={{
+                                                    width: "80px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                QTY PCS
+                                            </div>
                                         </th>
 
 
@@ -5607,10 +5913,17 @@ class SetPackagingBody extends Component {
                                                         fontSize: 14,
                                                         fontWeight: "800",
                                                         height: "2.82vh",
-                                                        //borderBottom: "0px"
                                                     }}
                                                 >
-                                                    {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].No}
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].No}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -5620,10 +5933,17 @@ class SetPackagingBody extends Component {
                                                         fontWeight: "800",
                                                         textAlign: "left",
                                                         height: "2.82vh",
-                                                        //borderBottom: "0px"
                                                     }}
                                                 >
-                                                    {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].ItemName}
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -5636,7 +5956,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.82vh",
                                                     }}
                                                 >
-                                                    {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[index].Qty}
+                                                    </div>
                                                 </th>
                                             </tr>
                                         )
@@ -5677,7 +6005,15 @@ class SetPackagingBody extends Component {
                                                         height: "3.0vh"
                                                     }}
                                                 >
-                                                    NO
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        NO
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -5689,7 +6025,15 @@ class SetPackagingBody extends Component {
                                                         borderTop: "0px",
                                                     }}
                                                 >
-                                                    NAMA BARANG
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        NAMA BARANG
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -5702,7 +6046,15 @@ class SetPackagingBody extends Component {
                                                         borderTop: "0px",
                                                     }}
                                                 >
-                                                    QTY PCS
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        QTY PCS
+                                                    </div>
                                                 </th>
                                             </tr>
 
@@ -5718,7 +6070,15 @@ class SetPackagingBody extends Component {
                                                                 height: "2.82vh",
                                                             }}
                                                         >
-                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                            <div
+                                                                style={{
+                                                                    width: "50px",
+                                                                    overflow: "hidden",
+                                                                    height: "3.3vh"
+                                                                }}
+                                                            >
+                                                                {item_list.slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                            </div>
                                                         </th>
                                                         <th
                                                             style={{
@@ -5729,7 +6089,15 @@ class SetPackagingBody extends Component {
                                                                 height: "2.82vh",
                                                             }}
                                                         >
-                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                            <div
+                                                                style={{
+                                                                    width: "600px",
+                                                                    overflow: "hidden",
+                                                                    height: "3.3vh"
+                                                                }}
+                                                            >
+                                                                {item_list.slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                            </div>
                                                         </th>
                                                         <th
                                                             style={{
@@ -5740,7 +6108,15 @@ class SetPackagingBody extends Component {
                                                                 height: "2.82vh",
                                                             }}
                                                         >
-                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                            <div
+                                                                style={{
+                                                                    width: "80px",
+                                                                    overflow: "hidden",
+                                                                    height: "3.3vh"
+                                                                }}
+                                                            >
+                                                                {item_list.slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                            </div>
                                                         </th>
                                                     </tr>
                                                 )
@@ -6029,7 +6405,15 @@ class SetPackagingBody extends Component {
                                                 height: "3.0vh"
                                             }}
                                         >
-                                            NO
+                                            <div
+                                                style={{
+                                                    width: "50px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                NO
+                                            </div>
                                         </th>
 
                                         <th
@@ -6040,7 +6424,15 @@ class SetPackagingBody extends Component {
                                                 height: "3.0vh"
                                             }}
                                         >
-                                            NAMA BARANG
+                                            <div
+                                                style={{
+                                                    width: "600px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                NAMA BARANG
+                                            </div>
                                         </th>
 
                                         <th
@@ -6052,7 +6444,15 @@ class SetPackagingBody extends Component {
                                                 height: "3.0vh"
                                             }}
                                         >
-                                            QTY PCS
+                                            <div
+                                                style={{
+                                                    width: "80px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                QTY PCS
+                                            </div>
                                         </th>
 
 
@@ -6073,7 +6473,15 @@ class SetPackagingBody extends Component {
                                                             //borderBottom: "0px"
                                                         }}
                                                     >
-                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].No}
+                                                        <div
+                                                            style={{
+                                                                width: "50px",
+                                                                overflow: "hidden",
+                                                                height: "3.3vh"
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].No}
+                                                        </div>
                                                     </th>
 
                                                     <th
@@ -6086,7 +6494,15 @@ class SetPackagingBody extends Component {
                                                             //borderBottom: "0px"
                                                         }}
                                                     >
-                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].ItemName}
+                                                        <div
+                                                            style={{
+                                                                width: "600px",
+                                                                overflow: "hidden",
+                                                                height: "3.3vh"
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].ItemName}
+                                                        </div>
                                                     </th>
 
                                                     <th
@@ -6099,7 +6515,15 @@ class SetPackagingBody extends Component {
                                                             height: "2.82vh",
                                                         }}
                                                     >
-                                                        {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].Qty}
+                                                        <div
+                                                            style={{
+                                                                width: "80px",
+                                                                overflow: "hidden",
+                                                                height: "3.3vh"
+                                                            }}
+                                                        >
+                                                            {item_list.slice(index_item_halaman_pertama[0], index_item_halaman_pertama[1])[y].Qty}
+                                                        </div>
                                                     </th>
                                                 </tr>
                                             )
@@ -6142,7 +6566,15 @@ class SetPackagingBody extends Component {
                                                         height: "3.0vh"
                                                     }}
                                                 >
-                                                    NO
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        NO
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -6154,7 +6586,15 @@ class SetPackagingBody extends Component {
                                                         borderTop: "0px",
                                                     }}
                                                 >
-                                                    NAMA BARANG
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        NAMA BARANG
+                                                    </div>
                                                 </th>
 
                                                 <th
@@ -6167,7 +6607,15 @@ class SetPackagingBody extends Component {
                                                         borderTop: "0px",
                                                     }}
                                                 >
-                                                    QTY PCS
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        QTY PCS
+                                                    </div>
                                                 </th>
                                             </tr>
 
@@ -6183,7 +6631,15 @@ class SetPackagingBody extends Component {
                                                                 height: "2.82vh",
                                                             }}
                                                         >
-                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                            <div
+                                                                style={{
+                                                                    width: "50px",
+                                                                    overflow: "hidden",
+                                                                    height: "3.3vh"
+                                                                }}
+                                                            >
+                                                                {item_list.slice(index_awal[idx], index_akhir[idx])[index].No}
+                                                            </div>
                                                         </th>
                                                         <th
                                                             style={{
@@ -6194,7 +6650,15 @@ class SetPackagingBody extends Component {
                                                                 height: "2.82vh",
                                                             }}
                                                         >
-                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                            <div
+                                                                style={{
+                                                                    width: "600px",
+                                                                    overflow: "hidden",
+                                                                    height: "3.3vh"
+                                                                }}
+                                                            >
+                                                                {item_list.slice(index_awal[idx], index_akhir[idx])[index].ItemName}
+                                                            </div>
                                                         </th>
                                                         <th
                                                             style={{
@@ -6205,7 +6669,15 @@ class SetPackagingBody extends Component {
                                                                 height: "2.82vh",
                                                             }}
                                                         >
-                                                            {item_list.slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                            <div
+                                                                style={{
+                                                                    width: "80px",
+                                                                    overflow: "hidden",
+                                                                    height: "3.3vh"
+                                                                }}
+                                                            >
+                                                                {item_list.slice(index_awal[idx], index_akhir[idx])[index].Qty}
+                                                            </div>
                                                         </th>
                                                     </tr>
                                                 )
@@ -6245,7 +6717,15 @@ class SetPackagingBody extends Component {
                                                 height: "3.0vh"
                                             }}
                                         >
-                                            NO
+                                            <div
+                                                style={{
+                                                    width: "50px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                NO
+                                            </div>
                                         </th>
 
                                         <th
@@ -6257,7 +6737,15 @@ class SetPackagingBody extends Component {
                                                 borderTop: "0px",
                                             }}
                                         >
-                                            NAMA BARANG
+                                            <div
+                                                style={{
+                                                    width: "600px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                NAMA BARANG
+                                            </div>
                                         </th>
 
                                         <th
@@ -6270,7 +6758,15 @@ class SetPackagingBody extends Component {
                                                 borderTop: "0px",
                                             }}
                                         >
-                                            QTY PCS
+                                            <div
+                                                style={{
+                                                    width: "80px",
+                                                    overflow: "hidden",
+                                                    height: "3.3vh"
+                                                }}
+                                            >
+                                                QTY PCS
+                                            </div>
                                         </th>
                                     </tr>
 
@@ -6286,7 +6782,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.82vh",
                                                     }}
                                                 >
-                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].No}
+                                                    <div
+                                                        style={{
+                                                            width: "50px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].No}
+                                                    </div>
                                                 </th>
                                                 <th
                                                     style={{
@@ -6297,7 +6801,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.82vh",
                                                     }}
                                                 >
-                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].ItemName}
+                                                    <div
+                                                        style={{
+                                                            width: "600px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].ItemName}
+                                                    </div>
                                                 </th>
                                                 <th
                                                     style={{
@@ -6309,7 +6821,15 @@ class SetPackagingBody extends Component {
                                                         height: "2.82vh",
                                                     }}
                                                 >
-                                                    {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].Qty}
+                                                    <div
+                                                        style={{
+                                                            width: "80px",
+                                                            overflow: "hidden",
+                                                            height: "3.3vh"
+                                                        }}
+                                                    >
+                                                        {item_list.slice(Math.max(jumlah_item - modulus, 0))[index].Qty}
+                                                    </div>
                                                 </th>
                                             </tr>
                                         )
@@ -9332,7 +9852,7 @@ class SetPackagingBody extends Component {
                     >
                         <Paging
                             enabled={true}
-                            defaultPageSize={10}
+                            defaultPageSize={30}
                             defaultPageIndex={0}
                         />
                         <Pager
@@ -9446,7 +9966,7 @@ class SetPackagingBody extends Component {
                     >
                         <Paging
                             enabled={true}
-                            defaultPageSize={5}
+                            defaultPageSize={30}
                             defaultPageIndex={0}
                         />
                         <Pager
@@ -9634,7 +10154,7 @@ class SetPackagingBody extends Component {
                         >
                             <Paging
                                 enabled={true}
-                                defaultPageSize={10}
+                                defaultPageSize={30}
                                 defaultPageIndex={0}
                             />
 
