@@ -6994,14 +6994,6 @@ class SetPackagingBody extends Component {
         const item_list_len = this.state.print["ItemList"].length;
 
         if (item_list_len > 0 && item_list_len < 5) {
-
-            // if (item_list_len < 5) {
-
-            //     for (var i = 0; i < (5 - item_list_len); i++) {
-            //         item_list.push({ ItemName: "empty" })
-            //     }
-            // }
-
             return (
                 <div
                     id="print2"
@@ -7066,7 +7058,7 @@ class SetPackagingBody extends Component {
                                 marginTop: "2px"
                             }}
                         >
-                            CUSTOMER&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
+                            CUSTOMER&nbsp;NAME&nbsp;:&nbsp;{this.state.print.CustomerName.toUpperCase()}
                         </p>
 
                         <div
@@ -7082,7 +7074,7 @@ class SetPackagingBody extends Component {
                                     fontWeight: "900"
                                 }}
                             >
-                                NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                                NOTICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
                             </p>
 
                             <p
@@ -7103,7 +7095,7 @@ class SetPackagingBody extends Component {
                                 marginTop: "-7.5px"
                             }}
                         >
-                            PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PickNo}
+                            PICK&nbsp;NO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{this.state.print.PickNo}
                         </p>
 
                         <p
