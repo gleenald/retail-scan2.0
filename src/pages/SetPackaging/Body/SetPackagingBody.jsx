@@ -6988,7 +6988,7 @@ class SetPackagingBody extends Component {
 
     }
 
-    //for print only
+    //for print only test
     renderTable_print = () => {
         const item_list = this.state.print["ItemList"];
         const item_list_len = this.state.print["ItemList"].length;
